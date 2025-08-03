@@ -1,1 +1,1 @@
-// JavaScript will go here
+// Placeholder for JavaScript functionality
