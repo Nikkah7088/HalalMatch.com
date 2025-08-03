@@ -1,8 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HalalMatch.com</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
 
-body { font-family: Arial, sans-serif; margin: 0; background-color: #f8f8f8; color: #333; }
-header { background-color: #008080; padding: 15px; text-align: center; color: white; }
-nav a { margin: 0 10px; color: white; text-decoration: none; font-weight: bold; }
-.hero { text-align: center; padding: 50px 20px; }
-.hero img { width: 80%; max-width: 600px; border-radius: 10px; }
-button { padding: 12px 25px; margin: 10px; background-color: #008080; color: white; border: none; border-radius: 5px; cursor: pointer; }
-footer { text-align: center; padding: 20px; background-color: #222; color: white; }
+        header {
+            background-color: #1c3b2f;
+            color: white;
+            padding: 20px 0;
+            font-size: 24px;
+        }
+
+        nav {
+            background-color: #f1f1f1;
+            padding: 10px;
+        }
+
+        nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .banner {
+            background: url('banner.jpg') no-repeat center center;
+            background-size: cover;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        h2 {
+            margin: 20px 0;
+            color: #1c3b2f;
+        }
+
+        button {
+            background-color: #1c3b2f;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            margin: 10px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #145d4a;
+        }
+
+        footer {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #f1f1f1;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+
+<header>Welcome to HalalMatch.com</header>
+
+<nav>
+    <a href="index.html">Home</a>
+    <a href="submit.html">Submit Profile</a>
+    <a href="filters.html">Filters</a>
+    <a href="profiles.html">View Profiles</a>
+    <a href="admin.html">Admin</a>
+</nav>
+
+<div class="banner">
+    HalalMatch Banner
+</div>
+
+<h2>Helping families find righteous partners with sincerity and dignity</h2>
+
+<a href="submit.html"><button>Submit Profile</button></a>
+<a href="profiles.html"><button>View Profiles</button></a>
+
+<footer>
+    <p>&copy; 2025 HalalMatch.com</p>
+</footer>
+
+</body>
+</html>
