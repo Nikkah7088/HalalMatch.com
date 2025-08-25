@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Filters | Halal Matchmaking</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/filters.js" defer></script>
+</head>
+<body>
+    <nav>...same as homepage...</nav>
+    <main>
+        <h1>Profile Filters</h1>
+        <form id="filter-form">
+            <label for="status">Marital Status:</label>
+            <select id="status" name="status">
+                <option value="">Select</option>
+                <option value="single">Single</option>
+                <option value="divorced">Divorced</option>
+                <option value="widowed">Widowed</option>
+            </select>
+            <label for="city">City:</label>
+            <input type="text" id="city" name="city" placeholder="Enter city">
+            <button type="submit">Apply Filters</button>
+        </form>
+        <div id="filtered-profiles"></div>
+    </main>
+    <footer>...same as homepage...</footer>
+</body>
+</html>

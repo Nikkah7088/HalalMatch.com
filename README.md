@@ -1,2 +1,10 @@
-# HalalMatch.com
-HalalMatch.com is a simple, secure, and family-oriented platform to help Muslims worldwide find halal, nikah-only marriage proposals with dignity and privacy. No dating or casual chats. Profiles are admin-approved, family-submitted, and the service is completely free
+# Halal Matchmaking Website
+
+Free, privacy-focused Halal matchmaking platform for Muslim families.  
+- Dark Ajrak theme  
+- Fully responsive  
+- Profiles, filters, admin, success stories  
+- Multilingual (English, Urdu)  
+- Easy to deploy on GitHub Pages or Netlify
+
+See `docs/deployment.md` for installation and deployment steps.

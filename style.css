@@ -1,0 +1,55 @@
+body {
+    background: url('../images/ajrak-bg.jpg') repeat;
+    color: #fafafa;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+nav {
+    background: #2d1e26;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    padding: 10px 30px;
+    justify-content: space-between;
+}
+.logo {
+    height: 50px;
+    margin-right: 25px;
+}
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+}
+nav a {
+    color: #ffd700;
+    font-weight: 500;
+    text-decoration: none;
+}
+.cta-buttons .btn {
+    padding: 15px 30px;
+    margin: 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 18px;
+    transition: background 0.2s;
+}
+.btn-primary { background: #2d1e26; color: #ffd700; }
+.btn-primary:hover { background: #ffd700; color: #2d1e26; }
+.btn-secondary { background: #ffd700; color: #2d1e26; }
+.btn-secondary:hover { background: #2d1e26; color: #ffd700; }
+footer {
+    background: #222;
+    color: #fff;
+    padding: 30px 10px;
+    text-align: center;
+}
+.admin-card img {
+    width: 100px;
+    border-radius: 50%;
+}
+@media (max-width: 600px) {
+    nav ul { flex-direction: column; gap: 8px; }
+    .cta-buttons .btn { width: 90%; margin: 10px auto; display: block; }
+}
