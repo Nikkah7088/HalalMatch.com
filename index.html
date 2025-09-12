@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HalalMatch.com - Premium Islamic Matchmaking</title>
+  <meta name="description" content="Premium Halal matchmaking platform connecting Muslim families worldwide with dignity, respect, and Islamic values." />
+  <link href="assets/css/premium-background.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Roboto:wght@300;400;500;600;700&family=Poppins:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=AlQalam+Shakir:wght@400&display=swap" rel="stylesheet" />
+  <style>
+    /* Base Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+
+
+    @keyframes fadeInZoom {
+      0% {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      color: #f5f5f7;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background: linear-gradient(135deg, #f5c518 0%, #ffffff 100%);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+  /* Section specific backgrounds */
+  #about {
+    background: rgba(10,12,16,0.92) url('https://i.postimg.cc/cgLDL516/Halal-Match-7.jpg') center/cover fixed no-repeat;
+    backdrop-filter: blur(1px);
+  }
+  /* Fix white shadow at bottom of main page */
+  body::after {
+    content: "";
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    background: linear-gradient(to top, #0a0c10, transparent);
+    pointer-events: none;
+    z-index: 999;
+  }
+
+    #blog {
+      background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+      background-image: url('https://i.postimg.cc/0QfZ8Z8Z/ajrak-pattern.png'), linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+      background-size: cover;
+      background-attachment: fixed;
+      color: #ffffff;
+      text-shadow: 1px 1px 2px #000000;
+    }
+
+    #contact {
+      background: linear-gradient(135deg, #2d1b69, #11998e, #38ef7d);
+      background-image: url('https://i.postimg.cc/0QfZ8Z8Z/ajrak-pattern.png'), linear-gradient(135deg, #2d1b69, #11998e, #38ef7d);
+      background-size: cover;
+      background-attachment: fixed;
+    }
+
+    a {
+      text-decoration: none;
+      color: #D4AF37;
+      transition: color 0.3s ease;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    }
+
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 42px;
+      width: 100%;
+      background: rgba(10,12,16,0.9);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    nav .logo {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #D4AF37;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 2rem;
+      transition: right 0.3s ease;
+    }
+
+    /* Mobile menu button */
+    nav button.mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: #f5f5f7;
+      font-size: 1.5rem;
+      cursor: pointer;
+      z-index: 1002;
+    }
+
+    /* Mobile menu styles */
+    @media (max-width: 768px) {
+      nav ul {
+        position: fixed;
+        top: 42px;
+        right: -100%;
+        width: 250px;
+        height: 100vh;
+        background: rgba(10,12,16,0.95);
+        backdrop-filter: blur(15px);
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        padding-top: 5rem;
+        gap: 2rem;
+        box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+      }
+
+      nav ul.active {
+        right: 0;
+      }
+
+      nav ul li {
+        width: 100%;
+        text-align: center;
+      }
+
+      nav ul li a {
+        display: block;
+        padding: 1rem;
+        width: 100%;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+      }
+
+      nav button.mobile-menu-btn {
+        display: block;
+        position: fixed;
+        top: 52px;
+        right: 20px;
+      }
+    }
+
+    nav ul li a {
+      color: #f5f5f7;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    nav ul li a:hover {
+      color: #D4AF37;
+    }
+
+    /* Hero Section */
+    .hero {
+      position: relative;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 182px 2rem 80px;
+    }
+
+    .hero h1 {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 850;
+      color: #FFFFFF;
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 4rem);
+      animation: fadeInZoom 1s ease-out 0.5s both;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+      cursor: pointer;
+    }
+
+    .hero .subtitle {
+      color: #FFFFFF;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      margin: 0;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      animation: fadeInZoom 1s ease-out 1s both;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+      cursor: pointer;
+    }
+
+    .hero img {
+      width: clamp(250px, 30vw, 400px);
+      height: clamp(250px, 30vw, 400px);
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 0 10px #D4AF37, 0 0 0 3px black;
+      transform: rotate(5deg);
+    }
+
+    /* Buttons */
+    .btn-3d {
+      display: inline-block;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
+      color: #000;
+      font-weight: 700;
+      text-decoration: none;
+      border-radius: 8px;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+      transition: transform 160ms ease, box-shadow 160ms ease;
+      text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+      font-size: 1rem;
+      margin: 0.5rem;
+    }
+
+    .btn-3d:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 26px rgba(0,0,0,0.45);
+    }
+
+    .btn-3d:active {
+      transform: translateY(0);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+    }
+
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+      width: 100%;
+    }
+
+    /* Sections */
+    section {
+      padding: 4rem 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    section h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      margin-bottom: 2rem;
+      text-align: center;
+      color: #f5f5f7;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    section p {
+      font-size: 1.2rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+      color: #f5f5f7;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    }
+
+    /* Cards */
+    .card {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 1rem 0;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+
+    .card h3 {
+      color: #D4AF37;
+      margin-bottom: 1rem;
+    }
+
+    /* Footer */
+    footer {
+      background: rgba(10,12,16,0.9);
+      color: #f5f5f7;
+      text-align: center;
+      padding: 2rem;
+      margin-top: 4rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      nav ul {
+        position: fixed;
+        top: 42px;
+        right: -100%;
+        width: 250px;
+        height: 100vh;
+        background: rgba(10,12,16,0.95);
+        backdrop-filter: blur(15px);
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        padding-top: 5rem;
+        gap: 2rem;
+        transition: right 0.3s ease;
+        z-index: 9999;
+        box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+      }
+
+      nav ul.active {
+        right: 0;
+      }
+
+      nav ul li {
+        width: 100%;
+        text-align: center;
+      }
+
+      nav ul li a {
+        display: block;
+        padding: 1rem;
+        width: 100%;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+      }
+
+      .hero {
+        flex-direction: column;
+        text-align: center;
+        padding: 142px 1rem 60px;
+      }
+
+      .hero h1 {
+        font-size: clamp(2rem, 8vw, 3rem);
+      }
+
+      .hero .subtitle {
+        font-size: clamp(1.5rem, 6vw, 2.5rem);
+      }
+
+      .hero img {
+        width: clamp(200px, 50vw, 350px);
+        height: clamp(200px, 50vw, 350px);
+      }
+
+      .btn-group {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .btn-3d {
+        width: 100%;
+        max-width: 300px;
+      }
+
+      section {
+        padding: 2rem 1rem;
+      }
+
+      section h2 {
+        font-size: clamp(1.8rem, 6vw, 2.5rem);
+      }
+
+      section p {
+        font-size: 1rem;
+      }
+
+      .card {
+        padding: 1.5rem;
+      }
+    }
+
+    @media (min-width: 769px) and (max-width: 1200px) {
+      .hero {
+        padding: 162px 2rem 60px;
+      }
+
+      .hero h1 {
+        font-size: clamp(2.5rem, 4vw, 4rem);
+      }
+
+      .hero .subtitle {
+        font-size: clamp(2rem, 3vw, 3rem);
+      }
+
+      .hero img {
+        width: clamp(300px, 25vw, 400px);
+        height: clamp(300px, 25vw, 400px);
+      }
+
+      section {
+        padding: 3rem 2rem;
+      }
+
+      section h2 {
+        font-size: clamp(2.5rem, 3vw, 3rem);
+      }
+    }
+
+    @media (min-width: 1201px) {
+      .hero {
+        padding: 182px 3rem 80px;
+      }
+
+      .hero h1 {
+        font-size: clamp(3rem, 5vw, 5rem);
+      }
+
+      .hero .subtitle {
+        font-size: clamp(2.5rem, 4vw, 4rem);
+      }
+
+      .hero img {
+        width: clamp(350px, 30vw, 500px);
+        height: clamp(350px, 30vw, 500px);
+      }
+
+      section {
+        padding: 4rem 3rem;
+      }
+
+      section h2 {
+        font-size: clamp(3rem, 4vw, 4rem);
+      }
+
+      section p {
+        font-size: 1.2rem;
+      }
+
+      .card {
+        padding: 2.5rem;
+      }
+    }
+
+    /* Large screens up to 200 feet (assuming high DPI) */
+    @media (min-width: 2001px) {
+      body {
+        font-size: 1.2em;
+      }
+
+      .hero h1 {
+        font-size: clamp(4rem, 6vw, 8rem);
+      }
+
+      .hero .subtitle {
+        font-size: clamp(3rem, 5vw, 6rem);
+      }
+
+      .hero img {
+        width: clamp(500px, 40vw, 800px);
+        height: clamp(500px, 40vw, 800px);
+      }
+
+      section h2 {
+        font-size: clamp(4rem, 5vw, 6rem);
+      }
+
+      .card {
+        padding: 3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- دعاؤں کی پٹی (Top Bar) -->
+  <div id="duas-bar">
+    <div class="duas-container">
+      <span class="dua">یا اللہ فقیر نور محمد مجاہد کو جنت کے سبز باغوں میں سکون نصیب فرما۔</span>
+      <span class="dua">اے پروردگار فقیر نور محمد مجاہد کی قبر کو رحمت و نور سے بھر دے۔</span>
+      <span class="dua">یا اللہ فقیر نور محمد مجاہد کے نامۂ اعمال کو نیکیوں سے منور فرما۔</span>
+      <span class="dua">مولا کریم فقیر نور محمد مجاہد کے درجات کو بلند سے بلند تر عطا فرما۔</span>
+      <span class="dua">یا رب فقیر نور محمد مجاہد کو نبی کریم ﷺ کی شفاعت نصیب فرما۔</span>
+      <span class="dua">یا رب احمد حسن نور پر اپنی غیبی مدد نازل فرما اور ہر مشکل آسان کر دے۔</span>
+      <span class="dua">یا اللہ احمد حسن نور کو نیک، پرسکون اور رحمت والا ہمسفر عطا فرما۔</span>
+      <span class="dua">یا اللہ احمد حسن نور کو منافق دوستوں اور رشتہ داروں کے شر سے محفوظ رکھ۔</span>
+      <span class="dua">مولا کریم احمد حسن نور کی زندگی کو خیر، سکون اور برکتوں سے بھر دے۔</span>
+      <span class="dua">یا اللہ میرے والد نور محمد مجاہد مرحوم کو جنت الفردوس میں اعلیٰ مقام عطا فرما۔</span>
+      <span class="dua">یا اللہ ہمیں اپنی بے پایاں رحمتوں کا وارث بنا۔</span>
+      <span class="dua">یا اللہ ہمارے والدین کو صحت اور عزت والی زندگی دے۔</span>
+      <span class="dua">یا اللہ ہمیں تیرے سوا کسی کا محتاج نہ بنا۔</span>
+      <span class="dua">یا اللہ نکاح کو آسان اور بابرکت بنا۔</span>
+      <span class="dua">یا اللہ اس نیک مشن کو اپنی رحمت سے کامیاب کر۔</span>
+      <span class="dua">یا اللہ ہر بیٹی کے نصیب نیک اور خوشحال بنا۔</span>
+      <span class="dua">یا اللہ ہر بیٹے کو نیک اور وفادار ہم سفر عطا کر۔</span>
+      <span class="dua">یا اللہ گھروں میں سکون اور دلوں میں قناعت عطا کر۔</span>
+      <span class="dua">یا اللہ بیوہ اور طلاق یافتہ بہنوں کے نصیب آسان کر۔</span>
+      <span class="dua">یا اللہ اولاد والی بہنوں کے لیے قبول کرنے والے دل عطا کر۔</span>
+      <span class="dua">یا اللہ جہیز اور فضول رسموں کو مٹا دے۔</span>
+      <span class="dua">یا اللہ قاری ندیم صاحب کو جزائے خیر عطا کر۔</span>
+      <span class="dua">یا اللہ تعاون کرنے والوں کو اپنی خاص رحمت سے نواز۔</span>
+      <span class="dua">یا اللہ یتیم بچوں کے لیے بہترین سہارا عطا کر۔</span>
+      <span class="dua">یا اللہ یتیموں کے پرورش کرنے والوں کو جنت کی خوشخبری دے۔</span>
+      <span class="dua">یا اللہ والدین کی دعاؤں کو قبولیت عطا کر۔</span>
+      <span class="dua">یا اللہ ہماری نسلوں کے نصیب نیک اور بابرکت بنا۔</span>
+      <span class="dua">یا اللہ ہر بہن بیٹی کو عزت اور سکون والا ہم سفر عطا کر۔</span>
+      <span class="dua">یا اللہ نکاح کو امت مسلمہ میں آسانی کا ذریعہ بنا۔</span>
+      <span class="dua">یا اللہ ہر دل کو محبت اور رحمت سے بھر دے۔</span>
+      <span class="dua">یا اللہ ہمیں دین پر قائم رکھ اور اپنی رحمتوں کا سایہ دے۔</span>
+    </div>
+  </div>
+
+  <style>
+    #duas-bar {
+      width: 100%;
+      background: #f4f4f4;
+      border-bottom: 2px solid #ddd;
+      font-family: 'AlQalam Shakir', serif;
+      font-size: 22px;
+      font-weight: bold;
+      color: #222;
+      text-align: center;
+      padding: 10px 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+    }
+    .dua {
+      display: none;
+    }
+  </style>
+
+  <script>
+    let duas = document.querySelectorAll(".dua");
+    let index = 0;
+
+    function showDua() {
+      duas.forEach(d => d.style.display = "none");
+      duas[index].style.display = "inline-block";
+      index = (index + 1) % duas.length;
+    }
+
+    showDua();
+    setInterval(showDua, 5000); // ہر دعا 5 سیکنڈ کے بعد بدلے گی
+  </script>
+  <nav>
+    <div class="logo">💍 HalalMatch.com</div>
+    <ul>
+      <li><a href="about.html">About</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="profiles.html">Profiles</a></li>
+      <li><a href="submit-profile.html">Submit Profile</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero" role="banner" aria-label="Welcome Section" style="position: relative; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2rem; max-width: 1400px; margin: 0 auto; padding: 182px 2rem 80px;">
+    <div style="flex: 1; min-width: 300px; max-width: 700px; display: flex; flex-direction: column; justify-content: center; gap: 1rem;">
+      <h1 style="font-family: 'Poppins', sans-serif; font-weight: 850; color: #FFFFFF; margin: 0; font-size: clamp(2rem, 5vw, 4rem); animation: fadeInZoom 1s ease-out 0.5s both; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); cursor: pointer;">Welcome Our Family Make Nikkah Easy.</h1>
+      <p class="subtitle" style="color: #FFFFFF; font-family: 'Poppins', sans-serif; font-weight: 700; margin: 0; font-size: clamp(1.8rem, 4vw, 3rem); animation: fadeInZoom 1s ease-out 1s both; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); cursor: pointer;">Global Connections for Muslim Families Built on Faith & Integrity</p>
+    </div>
+    <img src="https://i.postimg.cc/tCgmVZCN/Halal-Match-8.jpg" alt="Couples holding hands" style="width: clamp(250px, 30vw, 400px); height: clamp(250px, 30vw, 400px); border-radius: 50%; object-fit: cover; box-shadow: 0 0 10px #D4AF37, 0 0 0 3px black; transform: rotate(5deg);" />
+    <div class="btn-group" role="group" aria-label="Primary navigation buttons" style="margin-top: 1rem; width: 100%; justify-content: center;">
+      <a href="submit-profile.html" class="btn-3d"><span class="icon">📝</span> Submit Profile</a>
+      <a href="profiles.html" class="btn-3d"><span class="icon">👥</span> View Profiles</a>
+      <a href="https://chat.whatsapp.com/LGydEjHgRd6BnTp2J0f1C9" target="_blank" class="btn-3d"><span class="icon">📱</span> Contact</a>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="card">
+      <h2>About HalalMatch</h2>
+      <p>HalalMatch is a premium Islamic matchmaking platform dedicated to connecting Muslim families worldwide with dignity, respect, and Islamic values. Our platform ensures that all matches are made in accordance with Islamic principles, providing a safe and trusted environment for families to find suitable partners for their loved ones.</p>
+      <p>We understand the importance of family approval and cultural compatibility in Islamic marriages. That's why we offer personalized matchmaking services, profile verification, and community support to make the process as smooth and blessed as possible.</p>
+      <a href="about.html" class="btn-3d">Learn More</a>
+    </div>
+  </section>
+
+  <section id="blog">
+    <div class="card">
+      <h2>Latest from Our Blog</h2>
+      <p>Stay updated with the latest articles on Islamic marriage, family values, and matchmaking tips. Our blog provides valuable insights and guidance for Muslim families navigating the modern world while staying true to their faith.</p>
+      <a href="blog.html" class="btn-3d">Read Our Blog</a>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="card">
+      <h2>Contact Us</h2>
+      <p>Have questions or need assistance? Our team is here to help. Reach out to us through our contact form or join our WhatsApp community for instant support.</p>
+      <a href="contact.html" class="btn-3d">Get in Touch</a>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2023 HalalMatch.com. All rights reserved. Made with ❤️ for Muslim families worldwide.</p>
+  </footer>
+
+  <script src="dashboard.js"></script>
+  <script src="login.js"></script>
+  <script src="translations.js"></script>
+
+  <script>
+    // Mobile menu toggle
+    const navLinks = document.querySelector('nav ul');
+    const mobileMenuBtn = document.createElement('button');
+    mobileMenuBtn.classList.add('mobile-menu-btn');
+    mobileMenuBtn.innerHTML = '&#9776;';
+    document.querySelector('nav').appendChild(mobileMenuBtn);
+
+    mobileMenuBtn.addEventListener('click', () => {
+      navLinks.classList.toggle('active');
+      if (navLinks.classList.contains('active')) {
+        mobileMenuBtn.innerHTML = '✕';
+      } else {
+        mobileMenuBtn.innerHTML = '&#9776;';
+      }
+    });
+
+    // Click animations for headline and subline
+    const h1 = document.querySelector('h1');
+    const subtitle = document.querySelector('.subtitle');
+    h1.addEventListener('click', () => {
+      h1.classList.add('clicked');
+      setTimeout(() => h1.classList.remove('clicked'), 1000);
+    });
+    subtitle.addEventListener('click', () => {
+      subtitle.classList.add('clicked');
+      setTimeout(() => subtitle.classList.remove('clicked'), 1000);
+    });
+
+
+  </script>
+</body>
+</html>

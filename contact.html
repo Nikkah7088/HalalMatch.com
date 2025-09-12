@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us - HalalMatch</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="assets/css/premium-background.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(45deg, #8B0000, #000000);
+      background-image: url('https://i.postimg.cc/0QfZ8Z8Z/ajrak-pattern.png'), linear-gradient(45deg, #8B0000, #000000);
+      background-size: cover;
+      background-attachment: fixed;
+    }
+    .card-3d {
+      transform: perspective(1000px) rotateX(5deg);
+      transition: transform 0.3s;
+    }
+    .card-3d:hover {
+      transform: perspective(1000px) rotateX(0deg) scale(1.02);
+    }
+    .glossy-text {
+      text-shadow: 0 0 10px rgba(255,255,255,0.5);
+    }
+    .form-input {
+      background: rgba(255,255,255,0.9);
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 8px;
+      padding: 12px;
+      transition: all 0.3s ease;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: #D4AF37;
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+    }
+  </style>
+</head>
+<body class="font-sans min-h-screen text-white">
+  <header class="bg-black bg-opacity-80 text-white p-4 shadow-lg">
+    <nav class="flex justify-between items-center">
+      <h1 class="text-2xl font-bold glossy-text">HalalMatch</h1>
+      <a href="index.html" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition duration-300">Home</a>
+    </nav>
+  </header>
+
+  <main class="p-4 md:p-6">
+    <div class="max-w-6xl mx-auto">
+      <div class="grid md:grid-cols-2 gap-8">
+        <!-- Contact Information -->
+        <div class="bg-white bg-opacity-95 p-6 rounded-lg shadow-xl card-3d">
+          <h2 class="text-3xl font-bold mb-6 text-gray-800 glossy-text">Contact Information</h2>
+
+          <div class="space-y-6">
+            <div class="flex items-center">
+              <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
+                <span class="text-red-600 text-xl">📱</span>
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-800">WhatsApp (Admin)</h3>
+                <a href="https://wa.me/923099933547" class="text-blue-600 hover:underline">+92 309 9933547</a>
+              </div>
+            </div>
+
+            <div class="flex items-center">
+              <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
+                <span class="text-red-600 text-xl">📧</span>
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-800">Email</h3>
+                <a href="mailto:halalnikkahmatch@gmail.com" class="text-blue-600 hover:underline">halalnikkahmatch@gmail.com</a>
+              </div>
+            </div>
+
+            <div class="flex items-center">
+              <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                <span class="text-green-600 text-xl">👥</span>
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-800">WhatsApp Community</h3>
+                <a href="https://chat.whatsapp.com/LGydEjHgRd6BnTp2J0f1C9" target="_blank" class="text-blue-600 hover:underline">Join Our Group (700+ members)</a>
+              </div>
+            </div>
+
+            <div class="flex items-center">
+              <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                <span class="text-blue-600 text-xl">📍</span>
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-800">Location</h3>
+                <p class="text-gray-600">Rahim Yar Khan, Pakistan</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-8 p-4 bg-red-50 rounded-lg">
+            <h3 class="font-semibold text-gray-800 mb-2">Response Time</h3>
+            <p class="text-gray-600 text-sm">We typically respond within 24 hours. For urgent matters, please use WhatsApp.</p>
+          </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="bg-white bg-opacity-95 p-6 rounded-lg shadow-xl card-3d">
+          <h2 class="text-3xl font-bold mb-6 text-gray-800 glossy-text">Send us a Message</h2>
+
+          <form id="contactForm" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+              <input type="text" name="name" required class="form-input w-full" placeholder="Enter your full name">
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Email *</label>
+              <input type="email" name="email" required class="form-input w-full" placeholder="your.email@example.com">
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+              <input type="tel" name="phone" class="form-input w-full" placeholder="0300-1234567">
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Subject *</label>
+              <select name="subject" required class="form-input w-full">
+                <option value="">Select Subject</option>
+                <option value="general">General Inquiry</option>
+                <option value="support">Technical Support</option>
+                <option value="feedback">Feedback</option>
+                <option value="partnership">Partnership</option>
+                <option value="report">Report an Issue</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Message *</label>
+              <textarea name="message" rows="5" required class="form-input w-full" placeholder="Type your message here..."></textarea>
+            </div>
+
+            <div class="flex items-center">
+              <input type="checkbox" name="newsletter" class="mr-2">
+              <label class="text-sm text-gray-700">
+                Subscribe to our newsletter for updates and Islamic guidance
+              </label>
+            </div>
+
+            <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-lg font-semibold transition duration-300">
+              Send Message
+            </button>
+          </form>
+
+          <div id="formMessage" class="mt-4 p-3 rounded-lg hidden">
+            <p class="text-sm"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Links -->
+      <div class="mt-8 bg-white bg-opacity-95 p-6 rounded-lg shadow-xl card-3d">
+        <h2 class="text-2xl font-bold mb-4 text-gray-800 glossy-text">Quick Links</h2>
+        <div class="grid md:grid-cols-4 gap-4 text-center">
+          <a href="index.html" class="block p-3 bg-red-50 rounded-lg hover:bg-red-100 transition duration-300">
+            <div class="text-xl mb-1">🏠</div>
+            <div class="text-sm font-medium text-gray-800">Home</div>
+          </a>
+          <a href="profiles.html" class="block p-3 bg-red-50 rounded-lg hover:bg-red-100 transition duration-300">
+            <div class="text-xl mb-1">👥</div>
+            <div class="text-sm font-medium text-gray-800">Profiles</div>
+          </a>
+          <a href="submit-profile.html" class="block p-3 bg-red-50 rounded-lg hover:bg-red-100 transition duration-300">
+            <div class="text-xl mb-1">📝</div>
+            <div class="text-sm font-medium text-gray-800">Submit Profile</div>
+          </a>
+          <a href="admin-intro.html" class="block p-3 bg-red-50 rounded-lg hover:bg-red-100 transition duration-300">
+            <div class="text-xl mb-1">👨‍💼</div>
+            <div class="text-sm font-medium text-gray-800">Admin Intro</div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const contactForm = document.getElementById('contactForm');
+    const formMessage = document.getElementById('formMessage');
+
+    contactForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const formData = new FormData(this);
+      const data = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        phone: formData.get('phone'),
+        subject: formData.get('subject'),
+        message: formData.get('message'),
+        newsletter: formData.get('newsletter') ? true : false,
+        timestamp: new Date().toISOString()
+      };
+
+      // In a real application, this would be sent to a server
+      console.log('Contact form submitted:', data);
+
+      // Show success message
+      formMessage.className = 'mt-4 p-3 rounded-lg bg-green-100 text-green-800';
+      formMessage.innerHTML = '<p class="text-sm">Thank you for your message! We will get back to you within 24 hours.</p>';
+      formMessage.classList.remove('hidden');
+
+      // Reset form
+      this.reset();
+
+      // Hide message after 5 seconds
+      setTimeout(() => {
+        formMessage.classList.add('hidden');
+      }, 5000);
+    });
+  </script>
+</body>
+</html>

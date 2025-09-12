@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login - HalalMatch.com</title>
+  <meta name="description" content="Login to HalalMatch.com - Premium Islamic Matchmaking" />
+  <link href="assets/css/premium-background.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Roboto:wght@300;400;500;600;700&family=Poppins:wght@400;700;900&display=swap" rel="stylesheet" />
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+    import { translatePage, initLanguageSelector } from "./translations.js";
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCSdpzhy_WVaLLAyFYjHpglChbjoY-hUGM",
+      authDomain: "halalmatchcom786.firebaseapp.com",
+      projectId: "halalmatchcom786",
+      storageBucket: "halalmatchcom786.firebasestorage.app",
+      messagingSenderId: "781367758589",
+      appId: "1:781367758589:web:da4377d96fc07af0933894",
+      measurementId: "G-1HBFGDECRF"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Make auth globally available
+    window.auth = auth;
+    window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+
+    // Initialize language selector and translate page
+    window.addEventListener('DOMContentLoaded', () => {
+      initLanguageSelector();
+      translatePage();
+    });
+  </script>
+  <style>
+    /* Base Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      color: #ffffff;
+      min-height: 100vh;
+      overflow-x: hidden;
+      text-shadow: 1px 1px 2px #000000, 2px 2px 2px #D4AF37;
+      background: transparent;
+    }
+
+    /* Fix white shadow at bottom of main page */
+    body::after {
+      content: "";
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 80px;
+      background: linear-gradient(to top, #0a0c10, transparent);
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    a {
+      text-decoration: none;
+      color: #ffffff;
+      transition: color 0.3s ease;
+      text-shadow: 1px 1px 2px #000000, 2px 2px 2px #D4AF37;
+    }
+    a:hover {
+      color: #D4AF37;
+    }
+    /* Navbar */
+    nav.navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.7);
+    }
+    nav.navbar .logo {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 900;
+      font-size: 1.2rem;
+      color: #ffffff;
+      text-shadow: 1px 1px 2px #000000, 2px 2px 2px #D4AF37;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    nav.navbar .logo-icon {
+      font-size: 1.5rem;
+    }
+    .language-selector {
+      display: flex;
+      align-items: center;
+    }
+    .language-dropdown {
+      background: rgba(255,255,255,0.1);
+      color: #ffffff;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 5px;
+      padding: 0.5rem;
+      font-size: 0.9rem;
+      backdrop-filter: blur(10px);
+    }
+    .language-dropdown:focus {
+      outline: none;
+      border-color: #D4AF37;
+    }
+    /* Login Section */
+    section.login {
+      padding: 140px 2rem 80px;
+      text-align: center;
+      max-width: 400px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+    }
+    section.login h1 {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 900;
+      font-size: clamp(2rem, 5vw, 3rem);
+      color: #ffffff;
+      text-shadow: 1px 1px 2px #000000, 2px 2px 2px #D4AF37;
+    }
+    .login-form {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      padding: 2rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      width: 100%;
+    }
+    .login-form h2 {
+      color: #ffffff;
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+    .form-group label {
+      display: block;
+      color: #ffffff;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+    /* Responsive */
+    @media (max-width: 768px) {
+      section.login {
+        padding: 120px 1rem 60px;
+      }
+      section.login h1 {
+        font-size: clamp(1.5rem, 6vw, 2.5rem);
+      }
+    }
+    @media (max-width: 480px) {
+      nav.navbar {
+        padding: 0.5rem 1rem;
+      }
+      nav.navbar .logo {
+        font-size: 1.4rem;
+      }
+      nav.navbar .logo-icon {
+        font-size: 1.5rem;
+      }
+      section.login {
+        padding: 100px 1rem 40px;
+      }
+      section.login h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar" role="navigation" aria-label="Main Navigation">
+    <a href="index.html" class="logo" aria-label="HalalMatch Home">
+      <span class="logo-icon" aria-hidden="true">💍</span> HalalMatch.com
+    </a>
+    <div class="language-selector">
+      <select id="languageSelect" class="language-dropdown">
+        <option value="en">English</option>
+        <option value="ur">Urdu</option>
+        <option value="roman-ur">Roman Urdu</option>
+      </select>
+    </div>
+  </nav>
+
+  <section class="login" role="main" aria-label="Login Section">
+    <h1>Login to Your Account</h1>
+    <form id="loginForm" class="login-form">
+      <h2>Enter Your Credentials</h2>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" class="form-input" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" class="form-input" required>
+      </div>
+      <div id="loginError" class="error-message" style="color: red; display: none;"></div>
+      <button type="submit" class="btn-3d">Login</button>
+    </form>
+  </section>
+  <script src="login.js"></script>
+</body>
+</html>

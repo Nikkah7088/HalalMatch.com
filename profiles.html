@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profiles - HalalMatch</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="assets/css/premium-background.css" rel="stylesheet">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script type="text/javascript" src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
+    html {
+      background: rgba(10,12,16,0.92) url('https://i.postimg.cc/3wX6rjvQ/Untitled-design2.png') center/cover fixed no-repeat;
+      backdrop-filter: blur(1px);
+      min-height: 100vh;
+    }
+    body {
+      font-family: 'Arial', sans-serif;
+      position: relative;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      color: var(--white);
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 10px,
+          rgba(255, 255, 255, 0.03) 10px,
+          rgba(255, 255, 255, 0.03) 20px
+        ),
+        radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.05) 0%, transparent 25%),
+        radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.05) 0%, transparent 25%);
+      pointer-events: none;
+      z-index: -1;
+    }
+    .bg-scrim {
+      background: rgba(10,12,16,0.92);
+      backdrop-filter: blur(1px);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    .btn-3d {
+      transform: translateY(0);
+      transition: transform 160ms ease, box-shadow 160ms ease;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+      text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+    }
+    .btn-3d:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 26px rgba(0,0,0,0.45);
+    }
+    .card-3d {
+      transform: perspective(1000px) rotateX(5deg);
+      transition: transform 0.3s;
+    }
+    .card-3d:hover {
+      transform: perspective(1000px) rotateX(0deg) scale(1.05);
+    }
+    .glossy-text {
+      text-shadow: 0 0 10px rgba(255,255,255,0.5);
+    }
+    /* Note Card Styles */
+    #noteCardSection {
+      transition: all 0.3s ease;
+    }
+    #additionalPoints {
+      transition: all 0.3s ease;
+    }
+    #guidelinesList p {
+      transition: opacity 0.3s ease;
+    }
+    @media (max-width: 768px) {
+      #noteCardSection {
+        padding: 1rem;
+      }
+      #noteCardSection .flex {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      #noteCardSection h2 {
+        font-size: 1.25rem;
+      }
+      #noteCardSection p {
+        font-size: 0.9rem;
+      }
+      #noteCardSection button {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+      }
+    }
+    @media (max-width: 640px) {
+      .card-3d {
+        transform: none;
+      }
+      .card-3d:hover {
+        transform: scale(1.02);
+      }
+      #profileList {
+        gap: 1rem;
+      }
+      #profileList .bg-gradient-to-br {
+        padding: 0.75rem;
+      }
+      #profileList img {
+        height: 8rem;
+      }
+      #profileList h3 {
+        font-size: 1rem;
+      }
+      #profileList p {
+        font-size: 0.85rem;
+      }
+      /* Filter section mobile improvements */
+      .filter-section {
+        padding: 0.75rem !important;
+        margin-bottom: 1rem !important;
+      }
+      .filter-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.5rem !important;
+      }
+      .filter-grid select,
+      .filter-grid input {
+        padding: 0.5rem !important;
+        font-size: 0.875rem !important;
+      }
+      .filter-grid .flex {
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+      }
+      .filter-grid .flex input {
+        width: 100% !important;
+      }
+      .filter-apply-btn {
+        width: 100% !important;
+        padding: 0.75rem !important;
+        margin-top: 0.5rem !important;
+      }
+    }
+  </style>
+</head>
+<body class="font-sans min-h-screen">
+  <header class="bg-scrim text-white p-2 md:p-4 shadow-lg">
+    <nav class="flex justify-between items-center">
+    <div class="flex items-center gap-2">
+      <h1 class="text-lg md:text-xl font-bold glossy-text text-yellow-300">Make Marriage Easy</h1>
+      <div class="flex items-center gap-1 md:gap-2">
+        <button id="notificationBtn" class="btn-3d bg-red-600 hover:bg-red-700 px-1 md:px-2 py-1 md:py-1 rounded transition duration-300 relative text-xs text-black">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5-5V9a6 6 0 10-12 0v3l-5 5h5m0 0v1a3 3 0 006 0v-1m-6 0h6" />
+          </svg>
+          <span id="notificationBadge" class="absolute -top-0.5 -right-0.5 bg-yellow-400 text-black text-xs rounded-full h-2 w-2 md:h-3 md:w-3 flex items-center justify-center hidden">0</span>
+        </button>
+        <a href="index.html" id="homeLink" class="btn-3d bg-red-600 hover:bg-red-700 px-1 md:px-2 py-0.5 md:py-1 rounded transition duration-300 text-xs md:text-sm text-black">Home</a>
+      </div>
+    </nav>
+    <!-- Notification Panel -->
+    <div id="notificationPanel" class="hidden bg-white bg-opacity-95 p-4 rounded-lg shadow-lg mt-2 max-h-64 overflow-y-auto">
+      <h3 class="text-lg font-semibold mb-2 text-black">Match Notifications</h3>
+      <div id="notificationList" class="space-y-2">
+        <!-- Notifications will be added here -->
+      </div>
+    </div>
+  </header>
+  <main class="p-4 md:p-6">
+    <section class="filter-section mb-4 md:mb-6 bg-gradient-to-br from-purple-700 via-indigo-600 to-amber-500 bg-opacity-95 p-3 md:p-4 rounded-lg shadow-lg border border-white/20">
+      <div class="flex flex-col md:flex-row items-start md:items-center mb-4 gap-2">
+        <h2 id="searchFilterTitle" class="text-lg md:text-xl font-semibold glossy-text">Search & Filter</h2>
+      </div>
+      <div class="filter-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 md:gap-4">
+        <select id="filterGender" class="border-2 border-red-600 p-2 rounded bg-white text-black text-sm">
+          <option value="" id="allGendersOption">All Genders</option>
+          <option value="Male" id="maleOption">Male</option>
+          <option value="Female" id="femaleOption">Female</option>
+        </select>
+        <input type="text" id="filterCity" placeholder="Enter City..." class="border-2 border-red-600 p-2 rounded bg-white text-black text-sm">
+        <select id="filterStatus" class="border-2 border-red-600 p-2 rounded bg-white text-black text-sm">
+          <option value="" id="allMaritalStatusOption">All Marital Status</option>
+          <option value="Single" id="singleOption">Single</option>
+          <option value="Divorced" id="divorcedOption">Divorced</option>
+          <option value="Widow" id="widowOption">Widow</option>
+          <option value="Second Marriage" id="secondMarriageOption">Second Marriage</option>
+        </select>
+        <select id="filterCountry" class="border-2 border-red-600 p-2 rounded bg-white text-black text-sm">
+          <option value="">All Countries</option>
+          <option value="Pakistan">Pakistan</option>
+          <option value="Saudi Arabia">Saudi Arabia</option>
+          <option value="UAE">UAE</option>
+          <option value="Turkey">Turkey</option>
+          <option value="Egypt">Egypt</option>
+          <option value="Jordan">Jordan</option>
+          <option value="Morocco">Morocco</option>
+          <option value="Indonesia">Indonesia</option>
+          <option value="Malaysia">Malaysia</option>
+          <option value="Bangladesh">Bangladesh</option>
+          <option value="Iran">Iran</option>
+          <option value="Iraq">Iraq</option>
+          <option value="Syria">Syria</option>
+          <option value="Lebanon">Lebanon</option>
+          <option value="Palestine">Palestine</option>
+          <option value="Kuwait">Kuwait</option>
+          <option value="Qatar">Qatar</option>
+          <option value="Bahrain">Bahrain</option>
+          <option value="Oman">Oman</option>
+          <option value="Yemen">Yemen</option>
+          <option value="Tunisia">Tunisia</option>
+          <option value="Algeria">Algeria</option>
+          <option value="Libya">Libya</option>
+          <option value="Sudan">Sudan</option>
+          <option value="Somalia">Somalia</option>
+          <option value="Djibouti">Djibouti</option>
+          <option value="Comoros">Comoros</option>
+          <option value="Mauritania">Mauritania</option>
+          <option value="Niger">Niger</option>
+          <option value="Chad">Chad</option>
+          <option value="Mali">Mali</option>
+          <option value="Senegal">Senegal</option>
+          <option value="Guinea">Guinea</option>
+          <option value="Sierra Leone">Sierra Leone</option>
+          <option value="Burkina Faso">Burkina Faso</option>
+          <option value="Ivory Coast">Ivory Coast</option>
+          <option value="Ghana">Ghana</option>
+          <option value="Togo">Togo</option>
+          <option value="Benin">Benin</option>
+          <option value="Nigeria">Nigeria</option>
+          <option value="Cameroon">Cameroon</option>
+          <option value="Gabon">Gabon</option>
+          <option value="Congo">Congo</option>
+          <option value="DRC">DRC</option>
+          <option value="Tanzania">Tanzania</option>
+          <option value="Kenya">Kenya</option>
+          <option value="Uganda">Uganda</option>
+          <option value="Ethiopia">Ethiopia</option>
+          <option value="Eritrea">Eritrea</option>
+          <option value="Afghanistan">Afghanistan</option>
+          <option value="Kazakhstan">Kazakhstan</option>
+          <option value="Kyrgyzstan">Kyrgyzstan</option>
+          <option value="Tajikistan">Tajikistan</option>
+          <option value="Turkmenistan">Turkmenistan</option>
+          <option value="Uzbekistan">Uzbekistan</option>
+          <option value="Azerbaijan">Azerbaijan</option>
+          <option value="Other">Other</option>
+        </select>
+        <div class="flex gap-2">
+          <input type="number" placeholder="Min Age" class="border-2 border-red-600 p-2 rounded bg-white text-black w-1/2 text-sm" id="minAge">
+          <input type="number" placeholder="Max Age" class="border-2 border-red-600 p-2 rounded bg-white text-black w-1/2 text-sm" id="maxAge">
+        </div>
+        <button id="applyFilters" class="bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700 transition text-sm">Apply Filters</button>
+      </div>
+    </section>
+
+    <div class="flex flex-col lg:flex-row gap-4 md:gap-6">
+      <!-- Sign Up Section -->
+      <section id="signUpSection" class="flex-1 bg-gradient-to-br from-purple-700 via-indigo-600 to-amber-500 bg-opacity-95 p-6 rounded-lg shadow-lg border border-white/20">
+        <p class="text-white text-center text-xl md:text-2xl font-bold">Sign up with HalalMatch.com</p>
+        <p class="text-white text-center text-lg md:text-xl font-semibold mt-2">May Allah bless you with a pious spouse.<br>Remember, marriage is half of faith.<br>Pray for guidance in finding your soulmate.</p>
+        <div class="flex justify-center mt-4">
+          <button id="signUpLoginBtn" class="btn-3d bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg transition duration-300">Sign Up / Login</button>
+        </div>
+        <div id="authOptions" class="hidden mt-4 space-y-4">
+          <h2 class="text-xl font-semibold mb-4 glossy-text text-center">Choose an Option</h2>
+          <div class="flex justify-center space-x-4 mb-4">
+            <button id="googleSignUp" class="btn-3d bg-white text-black px-4 py-2 rounded-lg">Sign up with Google</button>
+            <button id="appleSignUp" class="btn-3d bg-black text-white px-4 py-2 rounded-lg">Sign in with Apple</button>
+          </div>
+          <div class="flex justify-center space-x-4">
+            <button id="showSignUpForm" class="btn-3d bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition duration-300 hidden">Manual Sign Up</button>
+            <button id="showLoginForm" class="btn-3d bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-300 hidden">Manual Login</button>
+          </div>
+          <p class="text-center text-white mt-4">Please sign up using Gmail (Google) or Apple ID for iPhone users. Manual sign-up is not available to ensure account verification.</p>
+          <form id="signupForm" class="hidden space-y-4">
+            <div>
+              <label for="signupName" id="fullNameLabel" class="block text-sm font-medium mb-2">Full Name:</label>
+              <input type="text" id="signupName" class="w-full p-3 rounded bg-white text-black border-2 border-red-600 focus:border-yellow-500 focus:outline-none" placeholder="Enter your full name" required>
+            </div>
+            <div>
+              <label for="signupEmail" id="gmailLabel" class="block text-sm font-medium mb-2">Gmail Email:</label>
+              <input type="email" id="signupEmail" class="w-full p-3 rounded bg-white text-black border-2 border-red-600 focus:border-yellow-500 focus:outline-none" placeholder="Enter your Gmail" required>
+            </div>
+            <div>
+              <label for="signupPassword" id="passwordLabel" class="block text-sm font-medium mb-2">Password:</label>
+              <input type="password" id="signupPassword" class="w-full p-3 rounded bg-white text-black border-2 border-red-600 focus:border-yellow-500 focus:outline-none" placeholder="Create a password" required>
+              <p id="passwordHint" class="text-xs text-yellow-300 mt-1">Minimum 7 characters, at least 1 lowercase, 1 uppercase, and 1 special character (e.g., ? @ #)</p>
+            </div>
+            <div>
+              <label for="signupConfirmPassword" id="confirmPasswordLabel" class="block text-sm font-medium mb-2">Confirm Password:</label>
+              <input type="password" id="signupConfirmPassword" class="w-full p-3 rounded bg-white text-black border-2 border-red-600 focus:border-yellow-500 focus:outline-none" placeholder="Confirm your password" required>
+            </div>
+            <button type="submit" id="signUpButton" class="btn-3d bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg transition duration-300 w-full">Sign Up</button>
+          </form>
+          <form id="loginForm" class="hidden space-y-4">
+            <div>
+              <label for="loginEmail" id="loginGmailLabel" class="block text-sm font-medium mb-2">Email:</label>
+              <input type="email" id="loginEmail" class="w-full p-3 rounded bg-white text-black border-2 border-red-600 focus:border-yellow-500 focus:outline-none" placeholder="Enter your Email" required>
+            </div>
+            <div>
+              <label for="loginPassword" id="loginPasswordLabel" class="block text-sm font-medium mb-2">Password:</label>
+              <input type="password" id="loginPassword" class="w-full p-3 rounded bg-white text-black border-2 border-red-600 focus:border-yellow-500 focus:outline-none" placeholder="Enter your password" required>
+            </div>
+            <button type="submit" id="loginButton" class="btn-3d bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg transition duration-300 w-full">Login</button>
+          </form>
+          <p class="mt-4 text-center text-white" id="noAccountText">Don't have an account? <button id="showSignUp" class="underline hover:text-yellow-400">Sign Up</button></p>
+        </div>
+      </section>
+
+      <!-- Note Card Section -->
+      <section id="noteCardSection" class="flex-1 bg-gradient-to-br from-purple-700 via-indigo-600 to-amber-500 bg-opacity-95 p-4 rounded-lg shadow-lg border border-white/20">
+        <h2 id="noteCardTitle" class="text-lg font-semibold mb-3 glossy-text">Important Guidelines for HalalMatch</h2>
+        <div id="guidelinesList" class="space-y-1 text-white text-sm">
+          <p id="point1">1. This platform is created only for Halal and sincere Nikah purposes.</p>
+          <p id="point2">2. Shortcut access is strictly prohibited. Every step must be followed truthfully.</p>
+          <p id="point3">3. No contact number will be shared unless a profile is verified and approved.</p>
+          <div id="additionalPoints" class="hidden space-y-1">
+            <p id="point4">4. All profiles must be verified before matching.</p>
+            <p id="point5">5. Respect and privacy are paramount.</p>
+            <p id="point6">6. No fake information allowed.</p>
+            <p id="point7">7. Communication should be through the platform initially.</p>
+            <p id="point8">8. Report any suspicious activity.</p>
+            <p id="point9">9. Age and marital status must be accurate.</p>
+            <p id="point10">10. Photos should be appropriate.</p>
+            <p id="point11">11. Family background details are required for compatibility.</p>
+            <p id="point12">12. The platform reserves the right to remove inappropriate content.</p>
+          </div>
+        </div>
+        <button id="readMoreBtn" class="btn-3d bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-lg transition duration-300 mt-3 text-sm">Read More</button>
+        <p id="agreementInstruction" class="mt-3 text-center text-white text-sm">If you agree with these guidelines and are serious about Halal Nikah, click Yes, I Agree to continue. Otherwise, please do not proceed.</p>
+        <div class="mt-3 flex justify-center space-x-3">
+          <button id="agreeYes" class="btn-3d bg-green-600 hover:bg-green-700 text-white px-4 py-1 rounded-lg transition duration-300 text-sm">Yes, I Agree</button>
+          <button id="agreeNo" class="btn-3d bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded-lg transition duration-300 text-sm">No</button>
+        </div>
+      </section>
+    </div>
+
+
+
+    <!-- Dashboard Section -->
+    <section id="dashboardSection" class="mb-6 bg-gradient-to-br from-purple-700 via-indigo-600 to-amber-500 bg-opacity-95 p-6 rounded-lg shadow-lg border border-white/20 hidden">
+      <h2 class="text-xl font-semibold mb-4 glossy-text">Welcome to Your Dashboard</h2>
+      <p class="text-white mb-4">This is your personal portfolio/dashboard.</p>
+      <button id="logoutBtn" class="btn-3d bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg transition duration-300">Logout</button>
+    </section>
+
+
+
+    <section id="profileList" class="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-4 md:gap-6">
+      <!-- Profiles dynamically added here -->
+    </section>
+  </main>
+  <script src="assets/js/profiles.js"></script>
+  <script>
+    // Password validation function
+    function validatePassword(password) {
+      const minLength = 7;
+      const hasLower = /[a-z]/.test(password);
+      const hasUpper = /[A-Z]/.test(password);
+      const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+      return password.length >= minLength && hasLower && hasUpper && hasSpecial;
+    }
+
+    // Check for returning users on page load
+    function checkReturningUser() {
+      const storedUser = JSON.parse(localStorage.getItem('halalMatchUser'));
+      if (storedUser) {
+        // Show welcome back message and dashboard
+        alert('Welcome back, ' + storedUser.name + '! You are already logged in.');
+        showDashboard(storedUser.name);
+      } else {
+        // Show sign-up section for new users
+        showSignUp();
+      }
+    }
+
+    // Navigation functions
+    function showSignUp() {
+      document.getElementById('signUpSection').classList.remove('hidden');
+      document.getElementById('dashboardSection').classList.add('hidden');
+    }
+
+    function showDashboard(userName) {
+      document.getElementById('signUpSection').classList.add('hidden');
+      document.getElementById('dashboardSection').classList.remove('hidden');
+      document.getElementById('dashboardSection').querySelector('h2').textContent = `Welcome to Your Dashboard, ${userName}`;
+    }
+
+    // Sign Up Form Handler
+    document.getElementById('signupForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = document.getElementById('signupName').value.trim();
+      const email = document.getElementById('signupEmail').value.trim();
+      const password = document.getElementById('signupPassword').value;
+      const confirmPassword = document.getElementById('signupConfirmPassword').value;
+
+      if (!name || !email || !password || !confirmPassword) {
+        alert('Please fill in all fields.');
+        return;
+      }
+
+      // Validate email: must be Gmail
+      const emailDomain = email.split('@')[1];
+      if (!emailDomain || !emailDomain.toLowerCase().includes('gmail.com')) {
+        alert('Please sign up using a Gmail account. For iPhone users, use Apple ID sign-in.');
+        return;
+      }
+
+      // Block common temp email domains
+      const tempDomains = ['10minutemail.com', 'temp-mail.org', 'guerrillamail.com', 'mailinator.com', 'tempail.com', 'throwaway.email', 'yopmail.com', 'maildrop.cc', 'tempinbox.com', 'dispostable.com'];
+      if (tempDomains.some(domain => emailDomain.toLowerCase().includes(domain))) {
+        alert('Temporary emails are not allowed. Please use a valid Gmail account.');
+        return;
+      }
+
+      if (!validatePassword(password)) {
+        alert('Password must be at least 7 characters long and contain at least one lowercase letter, one uppercase letter, and one special character.');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        alert('Passwords do not match.');
+        return;
+      }
+
+      // Store user data in localStorage
+      const user = { name, email, password };
+      localStorage.setItem('halalMatchUser', JSON.stringify(user));
+
+      alert('Sign up successful! Welcome to HalalMatch, ' + name + '.');
+      document.getElementById('signupForm').reset();
+      showDashboard(name);
+    });
+
+    // Login Form Handler
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      if (!email || !password) {
+        alert('Please enter email and password.');
+        return;
+      }
+
+      const storedUser = JSON.parse(localStorage.getItem('halalMatchUser'));
+      if (storedUser && storedUser.email === email && storedUser.password === password) {
+        alert('Login successful! Welcome back, ' + storedUser.name + '.');
+        showDashboard(storedUser.name);
+      } else {
+        alert('Invalid email or password.');
+      }
+    });
+
+    // Event listeners for new auth buttons
+    document.getElementById('signUpLoginBtn').addEventListener('click', function() {
+      document.getElementById('authOptions').classList.remove('hidden');
+    });
+
+    document.getElementById('showSignUpForm').addEventListener('click', function() {
+      document.getElementById('signupForm').classList.remove('hidden');
+      document.getElementById('loginForm').classList.add('hidden');
+    });
+
+    document.getElementById('showLoginForm').addEventListener('click', function() {
+      document.getElementById('loginForm').classList.remove('hidden');
+      document.getElementById('signupForm').classList.add('hidden');
+    });
+
+    // Logout Handler
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+      showSignUp();
+    });
+
+    // Social Button Event Listeners
+    document.getElementById('googleSignUp').addEventListener('click', function() {
+      alert('Sign up with Google feature coming soon.');
+    });
+
+    document.getElementById('appleSignUp').addEventListener('click', function() {
+      alert('Sign in with Apple feature coming soon.');
+    });
+
+    // Hide Apple button if not iPhone
+    if (!navigator.userAgent.match(/iPhone/i)) {
+      document.getElementById('appleSignUp').style.display = 'none';
+    }
+
+    // Profile Display Generation
+    let profiles = []; // Store profiles for AI matching
+    let maleProfiles = [];
+    let femaleProfiles = [];
+
+    const boysImages = [
+      'https://randomuser.me/api/portraits/men/1.jpg',
+      'https://randomuser.me/api/portraits/men/2.jpg',
+      'https://randomuser.me/api/portraits/men/3.jpg',
+      'https://randomuser.me/api/portraits/men/4.jpg',
+      'https://randomuser.me/api/portraits/men/5.jpg',
+    ];
+
+    const girlsPlaceholder = 'https://i.postimg.cc/3x3QzSGq/annie-placeholder.png'; // Premium look placeholder
+
+    const sampleNames = ['Ahmed', 'Bilal', 'Sara', 'Ayesha', 'Omar', 'Zainab', 'Ali', 'Fatima', 'Hassan', 'Maryam'];
+    const sampleCities = ['Karachi', 'Lahore', 'Islamabad', 'Multan', 'Peshawar', 'Quetta', 'Faisalabad'];
+    const sampleStatus = ['Single', 'Divorced', 'Widow', 'Second Marriage'];
+    const sampleCountries = ['Pakistan', 'Saudi Arabia', 'UAE', 'Turkey', 'Egypt'];
+    const sampleCaste = ['Rajput', 'Syed', 'Khan'];
+    const sampleEducation = ['Master’s', 'MBA', 'BS Hons', 'Bachelor'];
+    const sampleJob = ['Multinational Manager', 'Teacher', 'Not Working', 'Engineer'];
+    const sampleIncome = ['150000+', '100000-150000', '50000-100000'];
+    const sampleFamilyBackground = ['Father Govt Officer', 'Father Businessman', 'Father Retired'];
+
+    function getRandomItem(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function generateProfiles() {
+      const profileList = document.getElementById('profileList');
+      profileList.innerHTML = '';
+      profiles = []; // Reset profiles array
+      maleProfiles = [];
+      femaleProfiles = [];
+      const count = Math.floor(Math.random() * 6) + 5; // 5 to 10 profiles
+      for (let i = 0; i < count; i++) {
+        const isMale = Math.random() < 0.5;
+        const gender = isMale ? 'Male' : 'Female';
+        const name = getRandomItem(sampleNames);
+        const city = getRandomItem(sampleCities);
+        const status = getRandomItem(sampleStatus);
+        const country = getRandomItem(sampleCountries);
+        let age, caste, education, job, income, familyBackground, profileId;
+
+        if (isMale) {
+          age = 28 + Math.floor(Math.random() * 5); // 28-32
+          caste = 'Rajput';
+          education = getRandomItem(['Master’s', 'MBA']);
+          job = 'Multinational Manager';
+          income = '150000+';
+          familyBackground = getRandomItem(sampleFamilyBackground);
+          profileId = 'M-' + (maleProfiles.length + 1);
+        } else {
+          age = 24 + Math.floor(Math.random() * 5); // 24-28
+          caste = 'Rajput';
+          education = getRandomItem(['Master’s', 'BS Hons']);
+          job = getRandomItem(['Teaching', 'Not Working']);
+          income = getRandomItem(sampleIncome);
+          familyBackground = 'Father Govt Officer';
+          profileId = 'F-' + (femaleProfiles.length + 1);
+        }
+
+        const profile = { name, gender, city, status, country, age, caste, education, job, income, familyBackground, profileId, isMale };
+        profiles.push(profile);
+        if (isMale) {
+          maleProfiles.push(profile);
+        } else {
+          femaleProfiles.push(profile);
+        }
+
+        const profileCard = document.createElement('div');
+        profileCard.className = 'bg-gradient-to-br from-purple-700 via-indigo-600 to-amber-500 bg-opacity-95 p-4 rounded-lg shadow-lg card-3d border border-white/20';
+
+        const img = document.createElement('img');
+        img.className = 'w-full h-48 object-cover rounded mb-4';
+        img.alt = name + ' profile picture';
+        img.src = isMale ? getRandomItem(boysImages) : girlsPlaceholder;
+
+        const nameEl = document.createElement('h3');
+        nameEl.className = 'text-lg font-semibold mb-1 text-white';
+        nameEl.textContent = name;
+
+        const cityEl = document.createElement('p');
+        cityEl.className = 'mb-1 text-white';
+        cityEl.textContent = 'City: ' + city;
+
+        const statusEl = document.createElement('p');
+        statusEl.className = 'mb-2 text-white';
+        statusEl.textContent = 'Status: ' + status;
+
+        const shareLink = document.createElement('a');
+        shareLink.href = '#' + profileId;
+        shareLink.className = 'text-white hover:underline';
+        shareLink.textContent = 'Share Profile';
+
+        profileCard.appendChild(img);
+        profileCard.appendChild(nameEl);
+        profileCard.appendChild(cityEl);
+        profileCard.appendChild(statusEl);
+        profileCard.appendChild(shareLink);
+
+        profileList.appendChild(profileCard);
+      }
+    }
+
+    generateProfiles();
+
+    // AI Auto-Match Bot Notification System
+    const notificationBtn = document.getElementById('notificationBtn');
+    const notificationPanel = document.getElementById('notificationPanel');
+    const notificationList = document.getElementById('notificationList');
+    const notificationBadge = document.getElementById('notificationBadge');
+
+    let notificationCount = 0;
+
+    function addNotification(userName, userId, matchName, matchId, percentage) {
+      const notification = document.createElement('div');
+      notification.className = 'bg-yellow-100 p-2 rounded border-l-4 border-red-600';
+      notification.innerHTML = `<p class="text-sm text-black">Dear User, your profile (Profile Name: ${userName}, Profile ID: ${userId}) is ${percentage}% matching with another profile (Profile Name: ${matchName}, Profile ID: ${matchId}). Please review this potential match in your dashboard.</p>`;
+      notificationList.appendChild(notification);
+      notificationCount++;
+      updateBadge();
+    }
+
+    function updateBadge() {
+      if (notificationCount > 0) {
+        notificationBadge.textContent = notificationCount;
+        notificationBadge.classList.remove('hidden');
+      } else {
+        notificationBadge.classList.add('hidden');
+      }
+    }
+
+    notificationBtn.addEventListener('click', function() {
+      notificationPanel.classList.toggle('hidden');
+    });
+
+    // Simulate AI matches based on family requirements
+    function simulateMatches() {
+      let matchCount = 0;
+      const maxMatches = 1; // Weekly limit: 1 match maximum
+
+      // Shuffle male and female profiles
+      const shuffledMales = maleProfiles.sort(() => 0.5 - Math.random());
+      const shuffledFemales = femaleProfiles.sort(() => 0.5 - Math.random());
+
+      for (const male of shuffledMales) {
+        if (matchCount >= maxMatches) break;
+        for (const female of shuffledFemales) {
+          if (matchCount >= maxMatches) break;
+
+          // Calculate match percentage based on Age, City, Caste, Education, Job/Business
+          let matchScore = 0;
+          if (Math.abs(male.age - female.age) <= 5) matchScore += 20;
+          if (male.city === female.city) matchScore += 20;
+          if (male.caste === female.caste) matchScore += 20;
+          if (male.education === female.education) matchScore += 20;
+          if (male.job === female.job) matchScore += 20;
+
+          // Only notify if match is 90-99%
+          if (matchScore >= 90 && matchScore <= 99) {
+            addNotification(male.name, male.profileId, female.name, female.profileId, matchScore);
+            matchCount++;
+            break; // Move to next male after finding a match
+          }
+        }
+      }
+    }
+
+    simulateMatches();
+
+    // Note Card Functionality
+    const readMoreBtn = document.getElementById('readMoreBtn');
+    const additionalPoints = document.getElementById('additionalPoints');
+    const agreeYes = document.getElementById('agreeYes');
+    const agreeNo = document.getElementById('agreeNo');
+    const signUpSection = document.getElementById('signUpSection');
+
+    // Initially hide the sign-up section
+    signUpSection.classList.add('hidden');
+
+    // Read More/Read Less toggle
+    readMoreBtn.addEventListener('click', function() {
+      if (additionalPoints.classList.contains('hidden')) {
+        additionalPoints.classList.remove('hidden');
+        readMoreBtn.textContent = 'Read Less';
+      } else {
+        additionalPoints.classList.add('hidden');
+        readMoreBtn.textContent = 'Read More';
+      }
+    });
+
+    // Agreement toggle
+    agreeYes.addEventListener('click', function() {
+      signUpSection.classList.remove('hidden');
+      alert('Thank you for agreeing to the guidelines. You can now proceed with sign-up.');
+    });
+
+    agreeNo.addEventListener('click', function() {
+      signUpSection.classList.add('hidden');
+      alert('You must agree to the guidelines to proceed.');
+    });
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+      checkReturningUser();
+    });
+
+    // Enhanced sign-up flow with better validation
+    function enhanceSignUpFlow() {
+      const signupForm = document.getElementById('signupForm');
+      const inputs = signupForm.querySelectorAll('input');
+
+      // Real-time validation feedback
+      inputs.forEach(input => {
+        input.addEventListener('blur', function() {
+          validateField(this);
+        });
+      });
+
+      function validateField(field) {
+        const value = field.value.trim();
+        const fieldName = field.previousElementSibling.textContent.replace(':', '');
+
+        // Remove existing error messages
+        const existingError = field.parentNode.querySelector('.error-message');
+        if (existingError) {
+          existingError.remove();
+        }
+
+        let isValid = true;
+        let errorMessage = '';
+
+        switch(field.id) {
+          case 'signupName':
+            if (value.length < 2) {
+              isValid = false;
+              errorMessage = 'Name must be at least 2 characters long.';
+            }
+            break;
+          case 'signupEmail':
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(value)) {
+              isValid = false;
+              errorMessage = 'Please enter a valid email address.';
+            }
+            break;
+          case 'signupPassword':
+            if (!validatePassword(value)) {
+              isValid = false;
+              errorMessage = 'Password must be at least 7 characters with uppercase, lowercase, and special character.';
+            }
+            break;
+          case 'signupConfirmPassword':
+            const password = document.getElementById('signupPassword').value;
+            if (value !== password) {
+              isValid = false;
+              errorMessage = 'Passwords do not match.';
+            }
+            break;
+        }
+
+        if (!isValid) {
+          const errorDiv = document.createElement('div');
+          errorDiv.className = 'error-message text-red-400 text-xs mt-1';
+          errorDiv.textContent = errorMessage;
+          field.parentNode.appendChild(errorDiv);
+          field.classList.add('border-red-500');
+        } else {
+          field.classList.remove('border-red-500');
+          field.classList.add('border-green-500');
+        }
+
+        return isValid;
+      }
+    }
+
+    // Call the enhancement function
+    enhanceSignUpFlow();
+
+
+  </script>
+</body>
+</html>
