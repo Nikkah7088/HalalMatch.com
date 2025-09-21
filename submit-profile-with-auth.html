@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Submit Profile - HalalMatch.com</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link href="assets/css/premium-background.css" rel="stylesheet" />
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCSdpzhy_WVaLLAyFYjHpglChbjoY-hUGM",
+      authDomain: "halalmatchcom786.firebaseapp.com",
+      projectId: "halalmatchcom786",
+      storageBucket: "halalmatchcom786.firebasestorage.app",
+      messagingSenderId: "781367758589",
+      appId: "1:781367758589:web:da4377d96fc07af0933894",
+      measurementId: "G-1HBFGDECRF"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    // Make Firebase auth globally available
+    window.auth = auth;
+
+    // Make Firebase functions globally available
+    window.db = db;
+    window.addDoc = addDoc;
+    window.collection = collection;
+    window.serverTimestamp = serverTimestamp;
+    window.storage = storage;
+    window.ref = ref;
+    window.uploadBytes = uploadBytes;
+    window.getDownloadURL = getDownloadURL;
+
+    // Global function to upload photo to Firebase Storage
+    window.uploadPhotoToStorage = async function(file, profileId) {
+      if (!file) return null;
+      try {
+        const storageRef = ref(storage, `profiles/${profileId}/${file.name}`);
+        const snapshot = await uploadBytes(storageRef, file);
+        const downloadURL = await getDownloadURL(snapshot.ref);
+        return downloadURL;
+      } catch (error) {
+        console.error("Error uploading photo: ", error);
+        throw error;
+      }
+    };
+
+    // Global function to submit profile to Firestore
+    window.submitProfileToFirestore = async function(formData, category, photoFile = null) {
+      try {
+        const profileId = 'HM-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        formData.id = profileId;
+        formData.category = category;
+        formData.status = 'pending';
+        formData.submittedAt = serverTimestamp();
+
+        // Upload photo if present
+        if (photoFile) {
+          const photoURL = await uploadPhotoToStorage(photoFile, profileId);
+          formData.photoURL = photoURL;
+        }
+
+        // Save to Firestore
+        const docRef = await addDoc(collection(db, "profiles"), formData);
+        console.log("Profile submitted with ID: ", docRef.id);
+        return { success: true, id: docRef.id };
+      } catch (error) {
+        console.error("Error submitting profile: ", error);
+        return { success: false, error: error.message };
+      }
+    };
+  </script>
+  <!-- Google reCAPTCHA v2 -->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    html {
+      background: #87CEEB;
+      min-height: 100vh;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      position: relative;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      color: #1f2937;
+      background: #87CEEB;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 10px,
+          rgba(255, 255, 255, 0.03) 10px,
+          rgba(255, 255, 255, 0.03) 20px
+        ),
+        radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.05) 0%, transparent 25%),
+        radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.05) 0%, transparent 25%);
+      pointer-events: none;
+      z-index: -1;
+    }
+    .bg-scrim {
+      background: rgba(10,12,16,0.92);
+      backdrop-filter: blur(1px);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    .btn-3d {
+      transform: translateY(0);
+      transition: transform 160ms ease, box-shadow 160ms ease;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+      text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+    }
+    .btn-3d:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 26px rgba(0,0,0,0.45);
+    }
+    .card {
+      background: rgba(255,255,255,0.95);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    .glossy-text {
+      text-shadow: 0 0 10px rgba(255,255,255,0.5);
+    }
+    .form-input {
+      background: rgba(255,255,255,0.9);
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 8px;
+      padding: 12px;
+      transition: all 0.3s ease;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: #D4AF37;
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+    }
+    .user-type-btn {
+      background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
+      color: #1a1a1a;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      border: 2px solid #D4AF37;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(212, 175, 55, 0.3);
+    }
+    .user-type-btn:hover {
+      background: linear-gradient(135deg, #B8860B 0%, #D4AF37 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(212, 175, 55, 0.4);
+    }
+    @media (max-width: 768px) {
+      .user-type-btn {
+        padding: 8px 16px;
+        font-size: 12px;
+      }
+    }
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      backdrop-filter: blur(5px);
+    }
+    .modal-content {
+      background: rgba(255,255,255,0.95);
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      width: 90%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    @media (max-width: 768px) {
+      .modal-content {
+        margin: 10% auto;
+        width: 95%;
+        padding: 15px;
+      }
+    }
+    .close-btn {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close-btn:hover {
+      color: #000;
+    }
+    .modal-body {
+      padding-top: 20px;
+    }
+    .candidate-form {
+      margin-bottom: 20px;
+    }
+    .candidate-form h2 {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .candidate-form fieldset {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;

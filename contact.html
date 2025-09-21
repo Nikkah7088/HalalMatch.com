@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us - HalalMatch</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="assets/css/premium-background.css" rel="stylesheet">
+  <style>
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    body {
+      background: linear-gradient(135deg, #B8860B, #FFD700, #1E90FF, #000080);
+      background-size: 400% 400%;
+      animation: gradientShift 10s ease infinite;
+      background-attachment: fixed;
+      color: #000000;
+      font-family: 'Montserrat', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .card-3d {
+      transform: perspective(1000px) rotateX(5deg);
+      transition: transform 0.3s;
+      color: #000000;
+    }
+    .card-3d:hover {
+      transform: perspective(1000px) rotateX(0deg) scale(1.02);
+    }
+    .glossy-text {
+      text-shadow: 0 0 10px rgba(255,255,255,0.5);
+    }
+    .form-input {
+      background: rgba(255,255,255,0.95);
+      border: 2px solid rgba(0,0,0,0.1);
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: #D4AF37;
+      box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2), 0 8px 12px rgba(0,0,0,0.15);
+    }
+    .btn-3d {
+      transform: translateY(0);
+      transition: transform 160ms ease, box-shadow 160ms ease;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+      text-shadow: 0 1px 2px rgba(36, 16, 16, 0.5);
+    }
+    .btn-3d:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 26px rgba(0,0,0,0.45);
+    }
+  </style>
+</head>
+<body class="font-sans min-h-screen text-white">
+  <header class="bg-gradient-to-r from-[#D4AF37] via-[#1E90FF] to-[#000080] text-white p-4 shadow-lg">
+    <nav class="flex justify-between items-center">
+      <h1 class="text-2xl font-bold glossy-text">HalalMatch.com 💍</h1>
+      <a href="index.html" class="btn-3d bg-gradient-to-r from-[#D4AF37] to-[#B8860B] hover:from-[#B8860B] hover:to-[#D4AF37] px-4 py-2 rounded-lg transition duration-300">Home</a>
+    </nav>
+  </header>
+
+  <main class="p-4 md:p-6">
+    <div class="max-w-6xl mx-auto">
+      <!-- Our Services & Features Section -->
+      <div class="bg-white bg-opacity-95 p-6 rounded-lg shadow-xl card-3d mb-8">
+        <h2 class="text-3xl font-bold mb-6 text-gray-800 glossy-text text-center">Our Services & Features</h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="flex items-start space-x-4">
+            <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <span class="text-yellow-600 text-xl">💍</span>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Free Matchmaking</h3>
+              <p class="text-gray-600 text-sm">Completely free matrimonial services for all Muslim families worldwide</p>
+            </div>
+          </div>
+          <div class="flex items-start space-x-4">
+            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <span class="text-blue-600 text-xl">🛡️</span>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Privacy Protected</h3>
+              <p class="text-gray-600 text-sm">Personal data secure & shared only with verified matches</p>
+            </div>
+          </div>
+          <div class="flex items-start space-x-4">
+            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <span class="text-green-600 text-xl">🌍</span>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Global Reach</h3>
+              <p class="text-gray-600 text-sm">Connect with Muslim families across Pakistan, UK, USA, Canada, and worldwide</p>
+            </div>
+          </div>
+          <div class="flex items-start space-x-4">
+            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <span class="text-purple-600 text-xl">👨‍👩‍👧‍👦</span>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Family Focused</h3>
+              <p class="text-gray-600 text-sm">Strong emphasis on family approval & involvement</p>
+            </div>
+          </div>
+          <div class="flex items-start space-x-4">
+            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <span class="text-green-600 text-xl">📱</span>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">WhatsApp Support</h3>
+              <p class="text-gray-600 text-sm">Direct communication via verified WhatsApp community (700+ members)</p>
+            </div>
+          </div>
+          <div class="flex items-start space-x-4">
+            <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <span class="text-red-600 text-xl">⚡</span>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-2">Quick Response</h3>
+              <p class="text-gray-600 text-sm">Fast response within 24 hours for inquiries & profile submissions</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-8">
+        <!-- Contact Information -->
+        <div class="bg-white bg-opacity-95 p-6 rounded-lg shadow-xl card-3d">
+          <h2 class="text-3xl font-bold mb-6 text-gray-800 glossy-text">Contact Information</h2>
+
+          <div class="space-y-6">
+            <div class="flex items-center">
+              <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                <span class="text-green-600 text-xl">📱</span>
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-800">Phone</h3>
+                <a href="tel:+923099933547" class="text-blue-600 hover:underline">+92 309 9933547</a>
+              </div>
+            </div>
+
+            <div class="flex items-center">
+              <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                <span class="text-blue-600 text-xl">📧</span>
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-800">Email</h3>
+                <a href="mailto:halalnikkahmatch@gmail.com" class="text-blue-600 hover:underline">halalnikkahmatch@gmail.com</a>
+              </div>
+            </div>
+
+            <div class="flex items-center">
+              <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                <span class="text-green-600 text-xl">💬</span>
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-800">WhatsApp</h3>
+                <a href="https://wa.me/923099933547" class="text-blue-600 hover:underline">+92 309 9933547</a>
+              </div>
+            </div>
+
+            <div class="flex items-center">
+              <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+                <span class="text-purple-600 text-xl">👥</span>
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-800">WhatsApp Community</h3>
+                <a href="https://chat.whatsapp.com/LGydEjHgRd6BnTp2J0f1C9" target="_blank" class="text-blue-600 hover:underline">Join Our Group (700+ members)</a>
+              </div>
+            </div>
+
+            <div class="flex items-center">
+              <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
+                <span class="text-red-600 text-xl">📍</span>
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-800">Address</h3>
+                <p class="text-gray-600">Rahim Yar Khan, Pakistan</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-8">
+            <h3 class="font-semibold text-gray-800 mb-4">Connect with Us</h3>
+            <div class="flex space-x-4">
+              <a href="#" class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-blue-700 transition duration-300">
+                <span class="text-lg">📘</span>
+              </a>
+              <a href="#" class="w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center text-white hover:bg-pink-700 transition duration-300">
+                <span class="text-lg">📷</span>
+              </a>
+              <a href="https://wa.me/923099933547" class="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white hover:bg-green-700 transition duration-300">
+                <span class="text-lg">💬</span>
+              </a>
+              <a href="#" class="w-10 h-10 bg-blue-400 rounded-full flex items-center justify-center text-white hover:bg-blue-500 transition duration-300">
+                <span class="text-lg">🐦</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="mt-6 p-4 bg-red-50 rounded-lg">
+            <h3 class="font-semibold text-gray-800 mb-2">Response Time</h3>
+            <p class="text-gray-600 text-sm">We typically respond within 24 hours. For urgent matters, please use WhatsApp.</p>
+          </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="bg-white bg-opacity-95 p-6 rounded-lg shadow-xl card-3d">
+          <h2 class="text-3xl font-bold mb-6 text-gray-800 glossy-text">Send us a Message</h2>
+
+          <form id="contactForm" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+              <input type="text" name="name" required class="form-input w-full" placeholder="Enter your full name">
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Email *</label>
+              <input type="email" name="email" required class="form-input w-full" placeholder="your.email@example.com">
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+              <input type="tel" name="phone" class="form-input w-full" placeholder="0300-1234567">
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Subject *</label>
+              <select name="subject" required class="form-input w-full">
+                <option value="">Select Subject</option>
+                <option value="general">General Inquiry</option>
+                <option value="support">Technical Support</option>
+                <option value="feedback">Feedback</option>
+                <option value="partnership">Partnership</option>
+                <option value="report">Report an Issue</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Message *</label>
+              <textarea name="message" rows="5" required class="form-input w-full" placeholder="Type your message here..."></textarea>
+            </div>
+
+            <div class="flex items-center">
+              <input type="checkbox" name="newsletter" class="mr-2">
+              <label class="text-sm text-gray-700">
+                Subscribe to our newsletter for updates and Islamic guidance
+              </label>
+            </div>
+
+            <button type="submit" class="btn-3d w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition duration-300">
+              Send Message
+            </button>
+          </form>
+
+          <div id="formMessage" class="mt-4 p-3 rounded-lg hidden">
+            <p class="text-sm"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Links -->
+    </div>
+  </main>
+
+  <script>
+    const contactForm = document.getElementById('contactForm');
+    const formMessage = document.getElementById('formMessage');
+
+    contactForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const formData = new FormData(this);
+      const data = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        phone: formData.get('phone'),
+        subject: formData.get('subject'),
+        message: formData.get('message'),
+        newsletter: formData.get('newsletter') ? true : false,
+        timestamp: new Date().toISOString()
+      };
+
+      // In a real application, this would be sent to a server
+      console.log('Contact form submitted:', data);
+
+      // Show success message
+      formMessage.className = 'mt-4 p-3 rounded-lg bg-green-100 text-green-800';
+      formMessage.innerHTML = '<p class="text-sm">Thank you for your message! We will get back to you within 24 hours.</p>';
+      formMessage.classList.remove('hidden');
+
+      // Reset form
+      this.reset();
+
+      // Hide message after 5 seconds
+      setTimeout(() => {
+        formMessage.classList.add('hidden');
+      }, 5000);
+    });
+  </script>
+</body>
+</html>

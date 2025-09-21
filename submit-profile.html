@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Submit Profile - HalalMatch.com</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link href="assets/css/premium-background.css" rel="stylesheet" />
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendEmailVerification } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCSdpzhy_WVaLLAyFYjHpglChbjoY-hUGM",
+      authDomain: "halalmatchcom786.firebaseapp.com",
+      projectId: "halalmatchcom786",
+      storageBucket: "halalmatchcom786.firebasestorage.app",
+      messagingSenderId: "781367758589",
+      appId: "1:781367758589:web:da4377d96fc07af0933894",
+      measurementId: "G-1HBFGDECRF"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    // Make Firebase auth globally available
+    window.auth = auth;
+
+    // Make Firebase functions globally available
+    window.db = db;
+    window.addDoc = addDoc;
+    window.collection = collection;
+    window.serverTimestamp = serverTimestamp;
+    window.storage = storage;
+    window.ref = ref;
+    window.uploadBytes = uploadBytes;
+    window.getDownloadURL = getDownloadURL;
+
+    // Global function to upload photo to Firebase Storage
+    window.uploadPhotoToStorage = async function(file, profileId) {
+      if (!file) return null;
+      try {
+        const storageRef = ref(storage, `profiles/${profileId}/${file.name}`);
+        const snapshot = await uploadBytes(storageRef, file);
+        const downloadURL = await getDownloadURL(snapshot.ref);
+        return downloadURL;
+      } catch (error) {
+        console.error("Error uploading photo: ", error);
+        throw error;
+      }
+    };
+
+    // Global function to submit profile to Firestore
+    window.submitProfileToFirestore = async function(formData, category, photoFile = null) {
+      try {
+        const profileId = 'HM-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        formData.id = profileId;
+        formData.category = category;
+        formData.status = 'pending';
+        formData.submittedAt = serverTimestamp();
+
+        // Upload photo if present
+        if (photoFile) {
+          const photoURL = await uploadPhotoToStorage(photoFile, profileId);
+          formData.photoURL = photoURL;
+        }
+
+        // Save to Firestore
+        const docRef = await addDoc(collection(db, "profiles"), formData);
+        console.log("Profile submitted with ID: ", docRef.id);
+        return { success: true, id: docRef.id };
+      } catch (error) {
+        console.error("Error submitting profile: ", error);
+        return { success: false, error: error.message };
+      }
+    };
+  </script>
+  <!-- Google reCAPTCHA v2 -->
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    html {
+      background: #87CEEB;
+      min-height: 100vh;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      position: relative;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      color: #1f2937;
+      background: #87CEEB;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 10px,
+          rgba(255, 255, 255, 0.03) 10px,
+          rgba(255, 255, 255, 0.03) 20px
+        ),
+        radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.05) 0%, transparent 25%),
+        radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.05) 0%, transparent 25%);
+      pointer-events: none;
+      z-index: -1;
+    }
+    .bg-scrim {
+      background: rgba(10,12,16,0.92);
+      backdrop-filter: blur(1px);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    .btn-3d {
+      transform: translateY(0);
+      transition: transform 160ms ease, box-shadow 160ms ease;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+      text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+    }
+    .btn-3d:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 26px rgba(0,0,0,0.45);
+    }
+    .card {
+      background: rgba(255,255,255,0.95);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    .glossy-text {
+      text-shadow: 0 0 10px rgba(255,255,255,0.5);
+    }
+    .form-input {
+      background: rgba(255,255,255,0.9);
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 8px;
+      padding: 12px;
+      transition: all 0.3s ease;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: #D4AF37;
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+    }
+    .user-type-btn {
+      background: linear-gradient(135deg, #D4AF37 0%, #B8860B 100%);
+      color: #1a1a1a;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      border: 2px solid #D4AF37;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(212, 175, 55, 0.3);
+    }
+    .user-type-btn:hover {
+      background: linear-gradient(135deg, #B8860B 0%, #D4AF37 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(212, 175, 55, 0.4);
+    }
+    @media (max-width: 768px) {
+      .user-type-btn {
+        padding: 8px 16px;
+        font-size: 12px;
+      }
+    }
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      backdrop-filter: blur(5px);
+    }
+    .modal-content {
+      background: rgba(255,255,255,0.95);
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      width: 90%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    @media (max-width: 768px) {
+      .modal-content {
+        margin: 10% auto;
+        width: 95%;
+        padding: 15px;
+      }
+    }
+    .close-btn {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close-btn:hover {
+      color: #000;
+    }
+    .modal-body {
+      padding-top: 20px;
+    }
+    .candidate-form {
+      margin-bottom: 20px;
+    }
+    .candidate-form h2 {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .candidate-form fieldset {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    .candidate-form legend {
+      font-weight: bold;
+      color: #D4AF37;
+      text-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
+    }
+    .candidate-form label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    .candidate-form input,
+    .candidate-form select,
+    .candidate-form textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
+    .candidate-form button[type="submit"] {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      width: 100%;
+    }
+    .candidate-form button[type="submit"]:hover {
+      background: linear-gradient(135deg, #5a67d8 0%, #553c9a 100%);
+    }
+
+    /* New premium card style for Submit Your Profile and Choose Your Category */
+    .premium-card {
+      background: linear-gradient(135deg, #4b6cb7 0%, #182848 50%, #D4AF37 100%);
+      border: 2px solid #D4AF37;
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(75, 108, 183, 0.8), 0 5px 15px rgba(212, 175, 55, 0.3);
+      padding: 2.5rem;
+      color: white;
+      text-align: center;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .validation-error {
+      color: #dc2626;
+      font-size: 0.875rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .general-error {
+      background: rgba(220, 38, 38, 0.1);
+      border: 1px solid #dc2626;
+      border-radius: 8px;
+      padding: 12px;
+      color: #dc2626;
+      text-align: center;
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+
+  </style>
+</head>
+<body class="font-sans min-h-screen text-white">
+  <header class="text-white p-4 shadow-lg" style="background: linear-gradient(to right, #D4AF37, #87CEEB);">
+    <nav class="flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-white">HalalMatch.com</h1>
+      <div class="flex items-center space-x-4">
+        <a href="index.html" class="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 border-2 border-yellow-300 hover:border-yellow-400">🏠 Home</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="p-4 md:p-6">
+    <div class="max-w-6xl mx-auto">
+
+      <!-- Affidavit and Guidelines Card -->
+      <div class="premium-card" style="background-color: #4b6cb7;">
+        <h2 class="text-2xl font-bold mb-4">Guidelines and Affidavit</h2>
+        <p class="mb-4 text-lg">
+          Please read the following guidelines carefully before submitting your profile:
+        </p>
+        <ul class="list-disc list-inside mb-4 text-left max-w-2xl mx-auto">
+          <li>All information provided must be accurate and truthful.</li>
+          <li>Profiles are reviewed by our admin team before approval.</li>
+          <li>Respect and honesty are essential in matrimonial matters.</li>
+          <li>Any false information may lead to profile rejection.</li>
+        </ul>
+        <p class="mb-4 text-lg">
+          <strong>Affidavit:</strong> I hereby declare that all information provided in this profile is true and accurate to the best of my knowledge. I understand that providing false information may result in the rejection of my profile and potential legal consequences.
+        </p>
+        <label class="inline-flex items-center text-lg">
+          <input type="checkbox" id="affidavitCheck" class="form-checkbox h-6 w-6 text-yellow-400">
+          <span class="ml-3">I accept the affidavit and agree to the guidelines.</span>
+        </label>
+        <div id="affidavitError" class="hidden mt-4 p-3 bg-red-600 bg-opacity-20 border border-red-400 rounded-lg text-red-200 text-center text-sm">
+          ⚠️ You must accept the affidavit to proceed with profile submission.
+        </div>
+      </div>
+
+      <!-- New Submission Card -->
+      <div class="premium-card" style="background-color: #4b6cb7;">
+        <h2>Submit Your Profile</h2>
+        <p>Choose your category to submit your profile. All information will be reviewed by our admin team.</p>
+        <div class="flex justify-center gap-4">
+          <button id="btnPakistani" class="user-type-btn">Pakistani Candidates</button>
+          <button id="btnOverseas" class="user-type-btn">Overseas Pakistanis</button>
+          <button id="btnInternational" class="user-type-btn">International Muslims</button>
+        </div>
+      </div>
+
+      <!-- Modal for Pakistani Candidates -->
+      <div id="pakistaniModal" class="modal">
+        <div class="modal-content" style="background: linear-gradient(135deg, #4b6cb7 0%, #182848 50%, #D4AF37 100%);">
+          <span class="close-btn" id="closePakistani">&times;</span>
+          <div class="modal-body">
+            <form id="pakistaniForm" class="candidate-form p-6 rounded-lg shadow-lg text-white" style="background: linear-gradient(135deg, #4b6cb7 0%, #182848 50%, #D4AF37 100%);" novalidate>
+              <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-bold text-white glossy-text" data-lang-en="Pakistani Marriage Candidate Profile" data-lang-ur="پاکستانی شادی امیدوار پروفائل" data-lang-ro="Pakistani Marriage Candidate Profile">Pakistani Marriage Candidate Profile</h2>
+              </div>
+              <!-- Encouragement Text Ticker -->
+              <div class="mb-6 bg-white/10 rounded-lg p-3 border border-white/20">
+                <div class="text-center text-white text-sm italic font-semibold">
+                  Bismillah-ur-Rahman<br>
+                  Reduce your own demands, make marriage easy.
+                </div>
+              </div>
+
+              <!-- Basic Details -->
+              <fieldset class="border border-white/30 rounded-md p-4 mb-6 mt-4">
+                <legend class="font-semibold text-lg text-white mb-2" data-lang-en="Basic Details" data-lang-ur="بنیادی تفصیلات" data-lang-ro="Basic Details">Basic Details</legend>
+                <label for="pName" class="block mb-1 font-semibold" data-lang-en="Full Name *" data-lang-ur="پورا نام *" data-lang-ro="Poora Naam *">Full Name *</label>
+                <input type="text" id="pName" name="name" required class="form-input text-black">
+
+                <label for="pGender" class="block mt-4 mb-1 font-semibold" data-lang-en="Gender * *" data-lang-ur="ج *نس *" data-lang-ro="Ge *nder *"> *Gender *</label>
+<select id="pGender" name="gender" class="form-input text-black">
+                  <option value="" data-lang-en="Select" data-lang-ur="منتخب کریں" data-lang-ro="Select">Select</option>
+                  <option value="Male" data-lang-en="Male" data-lang-ur="مرد" data-lang-ro="Male">Male</option>
+                  <option value="Female" data-lang-en="Female" data-lang-ur="عورت" data-lang-ro="Female">Female</option>
+                </select>
+
+                <label for="pAge" class="block mt-4 mb-1 font-semibold" data-lang-en="Age *" data-lang-ur="عمر *" data-lang-ro="Age *">Age *</label>
+<input type="number" id="pAge" name="age" min="18" max="100" required class="form-input text-black">
+
+                <label for="pHeight" class="block mt-4 mb-1 font-semibold" data-lang-en="Height * *" data-lang-ur=" *قد *" data-lang-ro="He *ight *"> *Height *</label>
+<input type="text" id="pHeight" name="height" placeholder="e.g., 5'6\"" class="form-input text-black" data-lang-en="e.g., 5'6\"" data-lang-ur="مثال کے طور پر، 5'6\"" data-lang-ro="e.g., 5'6\"">
+                <label for="pMaritalStatus" class="block mt-4 mb-1 font-semibold" data-lang-en="Marital Status *" data-lang-ur="ازدواجی حیثیت *" data-lang-ro="Marital Status *">Marital Status *</label>
+<select id="pMaritalStatus" name="maritalStatus" class="form-input text-black">
+                  <option value="" data-lang-en="Select" data-lang-ur="منتخب کریں" data-lang-ro="Select">Select</option>
+                  <option value="Single" data-lang-en="Single" data-lang-ur="کنوارہ" data-lang-ro="Single">Single</option>
+                  <option value="Divorced" data-lang-en="Divorced" data-lang-ur="طلاق یافتہ" data-lang-ro="Divorced">Divorced</option>
+                  <option value="Widow" data-lang-en="Widow" data-lang-ur="بیوہ" data-lang-ro="Widow">Widow</option>
+                  <option value="Second Marriage" data-lang-en="Second Marriage" data-lang-ur="دوسری شادی" data-lang-ro="Second Marriage">Second Marriage</option>
+                </select>
+
+                <button id="pChildrenButton" type="button" style="display:none; margin-top: 10px;" class="user-type-btn" onclick="showChildren('childrenPopup')">How many children you have and what is their age</button>
+
+                <div id="childrenPopup" style="display:none; margin-top: 10px;">
+                  <label for="childrenInfo" class="block mb-1 font-semibold" data-lang-en="Kitne bachay hain? (Number and ages) *" data-lang-ur="کتنے بچے ہیں؟ (نمبر اور عمر) *" data-lang-ro="Kitne bachay hain? (Number and ages) *">Kitne bachay hain? (Number and ages) *</label>
+                  <textarea id="childrenInfo" name="childrenInfo" rows="3" required class="form-input text-black"></textarea>
+                </div>
+
+                <label for="pBodyType" class="block mt-4 mb-1 font-semibold" data-lang-en="Body Type *" data-lang-ur="جسم کی قسم *" data-lang-ro="Body Type *">Body Type *</label>
+<select id="pBodyType" name="bodyType" class="form-input text-black">
+                  <option value="" data-lang-en="Select" data-lang-ur="منتخب کریں" data-lang-ro="Select">Select</option>
+                  <option value="Slim" data-lang-en="Slim" data-lang-ur="پتلا" data-lang-ro="Slim">Slim</option>
+                  <option value="Average" data-lang-en="Average" data-lang-ur="متوسط" data-lang-ro="Average">Average</option>
+                  <option value="Healthy" data-lang-en="Healthy" data-lang-ur="صحت مند" data-lang-ro="Healthy">Healthy</option>
+                  <option value="Other" data-lang-en="Other" data-lang-ur="دیگر" data-lang-ro="Other">Other</option>
+                </select>
+
+                <label for="pEducation" class="block mt-4 mb-1 font-semibold" data-lang-en="Education (Qualification) *" data-lang-ur="تعلیم (اہلیت) *" data-lang-ro="Education (Qualification) *">Education (Qualification) *</label>
+<input type="text" id="pEducation" name="education" required class="form-input text-black">
+
+                <label for="pJobTitle" class="block mt-4 mb-1 font-semibold" data-lang-en="Job Title / Business Type *" data-lang-ur="ملازمت کا عنوان / کاروبار کی قسم *" data-lang-ro="Job Title / Business Type *">Job Title / Business Type *</label>
+<input type="text" id="pJobTitle" name="occupation" class="form-input text-black">
+
+                <label for="pIncome" class="block mt-4 mb-1 font-semibold" data-lang-en="Monthly Income (Range) *" data-lang-ur="ماہانہ آمدنی (رینج) *" data-lang-ro="Monthly Income (Range) *">Monthly Income (Range) *</label>
+<select id="pIncome" name="income" class="form-input text-black">
+                  <option value="" data-lang-en="Select" data-lang-ur="منتخب کریں" data-lang-ro="Select">Select</option>
+                  <option value="Under 50k" data-lang-en="Under 50k" data-lang-ur="50k سے کم" data-lang-ro="Under 50k">Under 50k</option>
+                  <option value="50k-1L" data-lang-en="50k-1L" data-lang-ur="50k-1L" data-lang-ro="50k-1L">50k-1L</option>
+                  <option value="1L-2L" data-lang-en="1L-2L" data-lang-ur="1L-2L" data-lang-ro="1L-2L">1L-2L</option>
+                  <option value="2L-5L" data-lang-en="2L-5L" data-lang-ur="2L-5L" data-lang-ro="2L-5L">2L-5L</option>
+                  <option value="Above 5L" data-lang-en="Above 5L" data-lang-ur="5L سے زیادہ" data-lang-ro="Above 5L">Above 5L</option>
+                </select>
+
+                <label for="pWorkNature" class="block mt-4 mb-1 font-semibold" data-lang-en="Work Nature *" data-lang-ur="کام کی نوعیت *" data-lang-ro="Work Nature *">Work Nature *</label>
+<select id="pWorkNature" name="workNature" class="form-input text-black">
+                  <option value="" data-lang-en="Select" data-lang-ur="منتخب کریں" data-lang-ro="Select">Select</option>
+                  <option value="Govt" data-lang-en="Govt" data-lang-ur="حکومتی" data-lang-ro="Govt">Govt</option>
+                  <option value="Private" data-lang-en="Private" data-lang-ur="نجی" data-lang-ro="Private">Private</option>
+                  <option value="Business" data-lang-en="Business" data-lang-ur="کاروبار" data-lang-ro="Business">Business</option>
+                  <option value="Self-Employed" data-lang-en="Self-Employed" data-lang-ur="خود ملازم" data-lang-ro="Self-Employed">Self-Employed</option>
+                  <option value="Not Working" data-lang-en="Not Working" data-lang-ur="کام نہیں کر رہے" data-lang-ro="Not Working">Not Working</option>
+                </select>
+              </fieldset>
+
+              <!-- Religious & Cultural Info -->
+              <fieldset class="border border-white/30 rounded-md p-4 mb-6">
+                <legend class="font-semibold text-lg text-white mb-2" data-lang-en="Religious & Cultural Info" data-lang-ur="مذہبی اور ثقافتی معلومات" data-lang-ro="Religious & Cultural Info">Religious & Cultural Info</legend>
+                <label for="pReligion" class="block mb-1 font-semibold" data-lang-en="Religion/Sect *" data-lang-ur="مذہب/فرقہ *" data-lang-ro="Religion/Sect *">Religion/Sect *</label>
+<select id="pReligion" name="sect" class="form-input text-black">
+                  <option value="" data-lang-en="Select" data-lang-ur="منتخب کریں" data-lang-ro="Select">Select</option>
+                  <option value="Sunni" data-lang-en="Sunni" data-lang-ur="سنّی" data-lang-ro="Sunni">Sunni</option>
+                  <option value="Shia" data-lang-en="Shia" data-lang-ur="شیعہ" data-lang-ro="Shia">Shia</option>
+                  <option value="Deobandi" data-lang-en="Deobandi" data-lang-ur="دیوبندی" data-lang-ro="Deobandi">Deobandi</option>
+                  <option value="Barelvi" data-lang-en="Barelvi" data-lang-ur="بریلوی" data-lang-ro="Barelvi">Barelvi</option>
+                  <option value="Ahl-e-Hadith" data-lang-en="Ahl-e-Hadith" data-lang-ur="اہل حدیث" data-lang-ro="Ahl-e-Hadith">Ahl-e-Hadith</option>
+                  <option value="Other" data-lang-en="Other" data-lang-ur="دیگر" data-lang-ro="Other">Other</option>
+                </select>
+
+                <label for="pLanguages" class="block mt-4 mb-1 font-semibold" data-lang-en="Mother Tongue / Languages *" data-lang-ur="ماں کی زبان / زبانیں *" data-lang-ro="Mother Tongue / Languages *">Mother Tongue / Languages *</label>
+<input type="text" id="pLanguages" name="motherTongue" class="form-input text-black">
+
+                <label for="pCaste" class="block mt-4 mb-1 font-semibold" data-lang-en="Caste (Optional)" data-lang-ur="ذات (اختیاری)" data-lang-ro="Caste (Optional)">Caste (Optional)</label>
+<input type="text" id="pCaste" name="caste" class="form-input text-black">
+              </fieldset>
+
+              <!-- Residence & Property -->
+              <fieldset class="border border-white/30 rounded-md p-4 mb-6">
+                <legend class="font-semibold text-lg text-white mb-2" data-lang-en="Residence & Property" data-lang-ur="رہائش اور جائیداد" data-lang-ro="Residence & Property">Residence & Property</legend>
+                <label for="pCurrentCity" class="block mb-1 font-semibold" data-lang-en="Current City/Area *" data-lang-ur="موجودہ شہر/علاقہ *" data-lang-ro="Current City/Area *">Current City/Area *</label>
+<input type="text" id="pCurrentCity" name="location" required class="form-input text-black">
+
+                <label for="pHometown" class="block mt-4 mb-1 font-semibold" data-lang-en="Permanent Hometown *" data-lang-ur="دائمی آبائی شہر *" data-lang-ro="Permanent Hometown *">Permanent Hometown *</label>
+<input type="text" id="pHometown" name="hometown" class="form-input text-black">
+
+                <label for="pResidenceType" class="block mt-4 mb-1 font-semibold" data-lang-en="Residence Type *" data-lang-ur="رہائش کی قسم *" data-lang-ro="Residence Type *">Residence Type *</label>
+<select id="pResidenceType" name="residenceType" class="form-input text-black">
+                  <option value="" data-lang-en="Select" data-lang-ur="منتخب کریں" data-lang-ro="Select">Select</option>
+                  <option value="Owned" data-lang-en="Owned" data-lang-ur="اپنی" data-lang-ro="Owned">Owned</option>
+                  <option value="Rented" data-lang-en="Rented" data-lang-ur="کرائے پر" data-lang-ro="Rented">Rented</option>
+                </select>
+
+                <label for="pHouseSize" class="block mt-4 mb-1 font-semibold" data-lang-en="Size of House (describe property size and family type) *" data-lang-ur="گھر کا سائز (جائیداد کا سائز اور خاندان کی قسم بیان کریں) *" data-lang-ro="Size of House (describe property size and family type) *">Size of House (describe property size and family type) *</label>
+<input type="text" id="pHouseSize" name="houseSize" placeholder="e.g., 5 Marla house suitable for nuclear family" class="form-input text-black" data-lang-en="e.g., 5 Marla house suitable for nuclear family" data-lang-ur="مثال کے طور پر، 5 مرلہ گھر جو جوڑے کے خاندان کے لیے موزوں ہے" data-lang-ro="e.g., 5 Marla house suitable for nuclear family">
+              </fieldset>
+
+              <!-- Family Background -->
+              <fieldset class="border border-white/30 rounded-md p-4 mb-6">
+                <legend class="font-semibold text-lg text-white mb-2" data-lang-en="Family Background" data-lang-ur="خاندانی پس منظر" data-lang-ro="Family Background">Family Background</legend>
+                <label for="pTotalFamily" class="block mb-1 font-semibold" data-lang-en="Total Family Members *" data-lang-ur="کل خاندان کے ارکان *" data-lang-ro="Total Family Members *">Total Family Members *</label>
+<input type="number" id="pTotalFamily" name="familyMembers" required class="form-input text-black">
+
+                <label for="pFatherProfession" class="block mt-4 mb-1 font-semibold" data-lang-en="Father's Profession *" data-lang-ur="والد کی پیشہ ورانہ *" data-lang-ro="Father's Profession *">Father's Profession *</label>
+<input type="text" id="pFatherProfession" name="fatherProfession" class="form-input text-black">
+
+                <label for="pMotherProfession" class="block mt-4 mb-1 font-semibold" data-lang-en="Mother's Profession *" data-lang-ur="والدہ کی پیشہ ورانہ *" data-lang-ro="Mother's Profession *">Mother's Profession *</label>
+<input type="text" id="pMotherProfession" name="motherProfession" class="form-input text-black">
+
+                <label for="pBrothers" class="block mt-4 mb-1 font-semibold" data-lang-en="Number of Brothers *" data-lang-ur="بھائیوں کی تعداد *" data-lang-ro="Number of Brothers *">Number of Brothers *</label>
+<input type="number" id="pBrothers" name="brothers" class="form-input text-black">
+
+                <label for="pSisters" class="block mt-4 mb-1 font-semibold" data-lang-en="Number of Sisters *" data-lang-ur="بہنوں کی تعداد *" data-lang-ro="Number of Sisters *">Number of Sisters *</label>
+<input type="number" id="pSisters" name="sisters" class="form-input text-black">
+
+                <label for="pMarriedBrothers" class="block mt-4 mb-1 font-semibold" data-lang-en="Number of Married Brothers *" data-lang-ur="شادی شدہ بھائیوں کی تعداد *" data-lang-ro="Number of Married Brothers *">Number of Married Brothers *</label>
+<input type="number" id="pMarriedBrothers" name="marriedBrothers" class="form-input text-black">
+
+                <label for="pMarriedSisters" class="block mt-4 mb-1 font-semibold" data-lang-en="Number of Married Sisters *" data-lang-ur="شادی شدہ بہنوں کی تعداد *" data-lang-ro="Number of Married Sisters *">Number of Married Sisters *</label>
+<input type="number" id="pMarriedSisters" name="marriedSisters" class="form-input text-black">
+              </fieldset>
+
+              <!-- Match Preferences -->
+              <fieldset class="border border-white/30 rounded-md p-4 mb-6">
+                <legend class="font-semibold text-lg text-white mb-2" data-lang-en="Match Preferences" data-lang-ur="میچ کی ترجیحات" data-lang-ro="Match Preferences">Match Preferences</legend>
+                <label for="pPrefAge" class="block mb-1 font-semibold" data-lang-en="Preferred Age Range *" data-lang-ur="ترجیحی عمر کی حد *" data-lang-ro="Preferred Age Range *">Preferred Age Range *</label>
+<input type="text" id="pPrefAge" name="preferredAge" placeholder="e.g., 25-35" class="form-input text-black" data-lang-en="e.g., 25-35" data-lang-ur="مثال کے طور پر، 25-35" data-lang-ro="e.g., 25-35">
+
+                <label for="pPrefHeight" class="block mt-4 mb-1 font-semibold" data-lang-en="Minimum Height *" data-lang-ur="کم از کم قد *" data-lang-ro="Minimum Height *">Minimum Height *</label>
+<input type="text" id="pPrefHeight" name="minHeight" placeholder="e.g., 5'4\"" class="form-input text-black" data-lang-en="e.g., 5'4\"" data-lang-ur="مثال کے طور پر، 5'4\"" data-lang-ro="e.g., 5'4\"">
+
+                <label for="pPrefCity" class="block mt-4 mb-1 font-semibold" data-lang-en="Preferred City/Region *" data-lang-ur="ترجیحی شہر/علاقہ *" data-lang-ro="Preferred City/Region *">Preferred City/Region *</label>
+<input type="text" id="pPrefCity" name="preferredCity" class="form-input text-black">
+
+                <label for="pPrefCaste" class="block mt-4 mb-1 font-semibold" data-lang-en="Caste Preference *" data-lang-ur="ذات کی ترجیح *" data-lang-ro="Caste Preference *">Caste Preference *</label>
+<input type="text" id="pPrefCaste" name="castePreference" class="form-input text-black">
+
+                <label for="pPrefEducation" class="block mt-4 mb-1 font-semibold" data-lang-en="Education Preference *" data-lang-ur="تعلیم کی ترجیح *" data-lang-ro="Education Preference *">Education Preference *</label>
+<input type="text" id="pPrefEducation" name="educationPreference" class="form-input text-black">
+
+                <label for="pPrefSect" class="block mt-4 mb-1 font-semibold" data-lang-en="Sect Preference *" data-lang-ur="فرقہ کی ترجیح *" data-lang-ro="Sect Preference *">Sect Preference *</label>
+<select id="pPrefSect" name="sectPreference" class="form-input text-black">
+                  <option value="" data-lang-en="Select" data-lang-ur="منتخب کریں" data-lang-ro="Select">Select</option>
+                  <option value="Sunni" data-lang-en="Sunni" data-lang-ur="سنّی" data-lang-ro="Sunni">Sunni</option>
+                  <option value="Shia" data-lang-en="Shia" data-lang-ur="شیعہ" data-lang-ro="Shia">Shia</option>
+                  <option value="Deobandi" data-lang-en="Deobandi" data-lang-ur="دیوبندی" data-lang-ro="Deobandi">Deobandi</option>
+                  <option value="Barelvi" data-lang-en="Barelvi" data-lang-ur="بریلوی" data-lang-ro="Barelvi">Barelvi</option>
+                  <option value="Ahl-e-Hadith" data-lang-en="Ahl-e-Hadith" data-lang-ur="اہل حدیث" data-lang-ro="Ahl-e-Hadith">Ahl-e-Hadith</option>
+                  <option value="Other" data-lang-en="Other" data-lang-ur="دیگر" data-lang-ro="Other">Other</option>
+                </select>
+
+                <label for="pPrefMarital" class="block mt-4 mb-1 font-semibold" data-lang-en="Preferred Marital Status *" data-lang-ur="ترجیحی ازدواجی حیثیت *" data-lang-ro="Preferred Marital Status *">Preferred Marital Status *</label>
+<select id="pPrefMarital" name="preferredMaritalStatus" class="form-input text-black">
+                  <option value="" data-lang-en="Select" data-lang-ur="منتخب کریں" data-lang-ro="Select">Select</option>
+                  <option value="Single" data-lang-en="Single" data-lang-ur="کنوارہ" data-lang-ro="Single">Single</option>
+                  <option value="Divorced" data-lang-en="Divorced" data-lang-ur="طلاق یافتہ" data-lang-ro="Divorced">Divorced</option>
+                  <option value="Widow" data-lang-en="Widow" data-lang-ur="بیوہ" data-lang-ro="Widow">Widow</option>
+                </select>
+
+                <label for="pIntro" class="block mt-4 mb-1 font-semibold" data-lang-en="Short Description / Intro (Self-written) *" data-lang-ur="مختصر تفصیل / تعارف (خود لکھا) *" data-lang-ro="Short Description / Intro (Self-written) *">Short Description / Intro (Self-written) *</label>
+<textarea id="pIntro" name="description" rows="3" required class="form-input text-black"></textarea>
+              </fieldset>
+
+              <!-- Photo Upload -->
+              <fieldset class="border border-white/30 rounded-md p-4 mb-6">
+                <legend class="font-semibold text-lg text-white mb-2" data-lang-en="Photo & Media" data-lang-ur="تصویر اور میڈیا" data-lang-ro="Photo & Media">Photo & Media</legend>
+                <p class="italic mb-2" data-lang-en="Female candidates may upload photos if comfortable; photos remain hidden and visible only to admin and shared family-to-family, never public." data-lang-ur="عورت امیدواروں کو اگر آرام دہ ہو تو تصاویر اپ لوڈ کر سکتی ہیں؛ تصاویر چھپی رہیں گی اور صرف ایڈمن اور شیئر کردہ خاندان-خاندان کو نظر آئیں گی، کبھی بھی پبلک نہیں۔" data-lang-ro="Female candidates may upload photos if comfortable; photos remain hidden and visible only to admin and shared family-to-family, never public.">Female candidates may upload photos if comfortable; photos remain hidden and visible only to admin and shared family-to-family, never public.</p>
+                <p class="italic mb-4" data-lang-en="Male candidates: Photo optional but recommended (must be recent, 15 days to 1 month old). Suspicious profiles: Admin may request video call verification." data-lang-ur="مرد امیدوار: تصویر اختیاری لیکن تجویز کردہ (ضروری ہے حالیہ، 15 دن سے 1 ماہ پرانی)۔ مشکوک پروفائلز: ایڈمن ویڈیو کال کی تصدیق کی درخواست کر سکتا ہے۔" data-lang-ro="Male candidates: Photo optional but recommended (must be recent, 15 days to 1 month old). Suspicious profiles: Admin may request video call verification.">Male candidates: Photo optional but recommended (must be recent, 15 days to 1 month old). Suspicious profiles: Admin may request video call verification.</p>
+<input type="file" id="pPhoto" name="photo" accept="image/*" class="form-input text-black">
+              </fieldset>
+
+              <!-- Contact Information -->
+              <fieldset class="border border-white/30 rounded-md p-4 mb-6">
+                <legend class="font-semibold text-lg text-white mb-2" data-lang-en="Contact Information" data-lang-ur="رابطے کی معلومات" data-lang-ro="Contact Information">Contact Information</legend>
+
+                <label for="pNumberOwner" class="block mb-1 font-semibold" data-lang-en="Whose number are you providing?" data-lang-ur="کس کا نمبر آپ فراہم کر رہے ہیں؟" data-lang-ro="Whose number are you providing?">Whose number are you providing?</label>
+<select id="pNumberOwner" name="numberOwner" class="form-input text-black">
+                  <option value="" data-lang-en="Select" data-lang-ur="منتخب کریں" data-lang-ro="Select">Select</option>
+                  <option value="Self" data-lang-en="Self" data-lang-ur="خود" data-lang-ro="Self">Self</option>
+                  <option value="Parent" data-lang-en="Parent" data-lang-ur="والدین" data-lang-ro="Parent">Parent</option>
+                  <option value="Other" data-lang-en="Other" data-lang-ur="دیگر" data-lang-ro="Other">Other</option>
+                </select>
+
+                <label for="pNumberOwnerName" class="block mt-4 mb-1 font-semibold" data-lang-en="Name of the person whose number is provided" data-lang-ur="اس شخص کا نام جس کا نمبر فراہم کیا گیا ہے" data-lang-ro="Name of the person whose number is provided">Name of the person whose number is provided</label>
+<input type="text" id="pNumberOwnerName" name="numberOwnerName" class="form-input text-black">
+
+                <label for="pWhatsApp" class="block mt-4 mb-1 font-semibold" data-lang-en="WhatsApp Number *" data-lang-ur="واٹس ایپ نمبر *" data-lang-ro="WhatsApp Number *">WhatsApp Number *</label>
+<input type="tel" id="pWhatsApp" name="whatsApp" class="form-input text-black">
+
+<label for="pMakePublic" class="block mb-1 font-semibold" data-lang-en="Do you want to make your mobile number public or remain private?" data-lang-ur="کیا آپ اپنا موبائل نمبر پبلک کرنا چاہتے ہیں یا پرائیویٹ رکھنا چاہتے ہیں؟" data-lang-ro="Do you want to make your mobile number public or remain private?">Do you want to make your mobile number public or remain private?</label>
+<select id="pMakePublic" name="makePublic" class="form-input text-black">
+                  <option value="" data-lang-en="Select" data-lang-ur="منتخب کریں" data-lang-ro="Select">Select</option>
+                  <option value="Public" data-lang-en="Public" data-lang-ur="پبلک" data-lang-ro="Public">Public</option>
+                  <option value="Private" data-lang-en="Private" data-lang-ur="پرائیویٹ" data-lang-ro="Private">Private</option>
+                </select>
+
+
+
+                <p class="text-sm text-white italic mb-4" data-lang-en="Note: Male candidates' numbers are public by default. Female candidates' numbers are shared only with family consent." data-lang-ur="نوٹ: مرد امیدواروں کے نمبر ڈیفالٹ طور پر پبلک ہیں۔ عورت امیدواروں کے نمبر صرف خاندانی رضامندی کے ساتھ شیئر کیے جاتے ہیں۔" data-lang-ro="Note: Male candidates' numbers are public by default. Female candidates' numbers are shared only with family consent.">
+                  Note: Male candidates' numbers are public by default. Female candidates' numbers are shared only with family consent.
+                </p>
+
+
+              </fieldset>
+
+              <!-- Affidavit -->
+              <div class="mb-6">
+                <p class="text-white mb-2">I give affidavit that I have provided all these details with my truth, I agree to it.</p>
+                  <option value="">Select</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+                <div id="pAffidavitError" class="hidden mt-2 p-2 bg-red-600 bg-opacity-20 border border-red-400 rounded-lg text-red-200 text-sm">
+                  You must select "Yes" to agree to the affidavit.
+                </div>
+              </div>
+
+              <div class="g-recaptcha" data-sitekey="6Ld05cMrAAAAANKZ-GEK4AvlkSx9ifaYQvIxDu9N"></div>
+              <button type="submit" class="user-type-btn w-full" data-lang-en="Submit Pakistani Candidate Form" data-lang-ur="پاکستانی امیدوار فارم جمع کریں" data-lang-ro="Submit Pakistani Candidate Form">Submit Pakistani Candidate Form</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal for Overseas Pakistanis -->
+      <div id="overseasModal" class="modal">
+        <div class="modal-content" style="background: linear-gradient(135deg, #4b6cb7 0%, #182848 50%, #D4AF37 100%);">
+          <span class="close-btn" id="closeOverseas">&times;</span>
+          <div class="modal-body">
+            <form id="overseasForm" class="candidate-form p-6 rounded-lg shadow-lg text-white" style="background: linear-gradient(135deg, #4b6cb7 0%, #182848 50%, #D4AF37 100%);" novalidate>
+              <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-bold text-white glossy-text" data-lang-en="Overseas Pakistani Marriage Candidate Profile" data-lang-ur="بیرونی پاکستانی شادی امیدوار پروفائل" data-lang-ro="Overseas Pakistani Marriage Candidate Profile">Overseas Pakistani Marriage Candidate Profile</h2>
+              </div>
+              <!-- Encouragement Text Ticker -->
+              <div class="mb-6 bg-white/10 rounded-lg p-3 border border-white/20">
+                <div class="text-center text-white text-sm italic font-semibold">
+                  Bismillah-ur-Rahman<br>
+                  Reduce your own demands, make marriage easy.
+                </div>
+              </div>
+              <!-- Basic Details -->
+              <fieldset class="border border-white/30 rounded-md p-4 mb-6 mt-4">
+                <legend class="font-semibold text-lg text-white mb-2">Basic Details</legend>
+                <label for="oName" class="block mb-1 font-semibold">Full Name *</label>
+                <input type="text" id="oName" name="name" required class="form-input text-black">
+
+                <label for="oGender" class="block mt-4 mb-1 font-semibold">Gender *</label>
+                <select id="oGender" name="gender" class="form-input text-black">
+                  <option value="">Select</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+
+                <label for="oAge" class="block mt-4 mb-1 font-semibold">Age *</label>
+                <input type="number" id="oAge" name="age" min="18" max="100" required class="form-input text-black">
+
+                <label for="oHeight" class="block mt-4 mb-1 font-semibold">Height *</label>
+                <input type="text" id="oHeight" name="height" placeholder="e.g., 5'6\"" class="form-input text-black">
+
+                <label for="oMaritalStatus" class="block mt-4 mb-1 font-semibold">Marital Status *</label>
+                <select id="oMaritalStatus" name="maritalStatus" class="form-input text-black">
+                  <option value="">Select</option>
+                  <option value="Single">Single</option>
+                  <option value="Divorced">Divorced</option>
+                  <option value="Widow">Widow</option>
+                  <option value="Second Marriage">Second Marriage</option>
+                </select>
+                <button id="oChildrenButton" type="button" style="display:none; margin-top: 10px;" class="user-type-btn" onclick="showChildren('childrenPopupO')">How many children you have and what is their age</button>
+                <div id="childrenPopupO" style="display:none; margin-top: 10px;">
+                  <label for="childrenInfoO" class="block mb-1 font-semibold">Kitne bachay hain? (Number and ages) *</label>
+                  <textarea id="childrenInfoO" name="childrenInfoO" rows="3" required class="form-input text-black"></textarea>
+                </div>
+
+                <label for="oBodyType" class="block mt-4 mb-1 font-semibold">Body Type *</label>
+                <select id="oBodyType" name="bodyType" class="form-input text-black">
+                  <option value="">Select</option>
+                  <option value="Slim">Slim</option>
+                  <option value="Average">Average</option>
+                  <option value="Healthy">Healthy</option>
+                  <option value="Other">Other</option>
+                </select>
+
+                <label for="oEducation" class="block mt-4 mb-1 font-semibold">Education (Qualification) *</label>
+                <input type="text" id="oEducation" name="education" required class="form-input text-black">
+
+                <label for="oJobTitle" class="block mt-4 mb-1 font-semibold">Job Title / Business Type *</label>
+                <input type="text" id="oJobTitle" name="occupation" class="form-input text-black">
+
+                <label for="oIncome" class="block mt-4 mb-1 font-semibold">Monthly Income (Range) *</label>
+                <select id="oIncome" name="income" class="form-input text-black">
+                  <option value="">Select</option>
+                  <option value="Under 50k">Under 50k</option>
+                  <option value="50k-1L">50k-1L</option>
+                  <option value="1L-2L">1L-2L</option>
+                  <option value="2L-5L">2L-5L</option>
+                  <option value="Above 5L">Above 5L</option>
+                </select>
+
+                <label for="oWorkNature" class="block mt-4 mb-1 font-semibold">Work Nature *</label>
+                <select id="oWorkNature" name="workNature" class="form-input text-black">
+                  <option value="">Select</option>
+                  <option value="Govt">Govt</option>
+                  <option value="Private">Private</option>
+                  <option value="Business">Business</option>
+                  <option value="Self-Employed">Self-Employed</option>
+                  <option value="Not Working">Not Working</option>
+                </select>
+              </fieldset>
+
+
+
+              <!-- Religious & Cultural Info -->
+              <fieldset class="border border-white/30 rounded-md p-4 mb-6">
+                <legend class="font-semibold text-lg text-white mb-2">Religious & Cultural Info</legend>
+                <label for="oReligion" class="block mb-1 font-semibold">Religion/Sect *</label>
+                <select id="oReligion" name="sect" class="form-input text-black">
+                  <option value="">Select</option>
+                  <option value="Sunni">Sunni</option>
+                  <option value="Shia">Shia</option>
+                  <option value="Deobandi">Deobandi</option>
+                  <option value="Barelvi">Barelvi</option>
+                  <option value="Ahl-e-Hadith">Ahl-e-Hadith</option>
+                  <option value="Other">Other</option>
+                </select>
+                <label for="oLanguages" class="block mt-4 mb-1 font-semibold">Mother Tongue / Languages *</label>
+                <input type="text" id="oLanguages" name="motherTongue" class="form-input text-black">
+                <label for="oCaste" class="block mt-4 mb-1 font-semibold">Caste (Optional)</label>
+                <input type="text" id="oCaste" name="caste" class="form-input text-black">
+              </fieldset>
+
+              <!-- Residence & Property -->
+              <fieldset class="border border-white/30 rounded-md p-4 mb-6">
+                <legend class="font-semibold text-lg text-white mb-2">Residence & Property</legend>
+                <label for="oCurrentCity" class="block mb-1 font-semibold">Current City/Area *</label>
+                <input type="text" id="oCurrentCity" name="location" required class="form-input text-black">
+
+                <label for="oHometown" class="block mt-4 mb-1 font-semibold">Permanent Hometown *</label>
+                <input type="text" id="oHometown" name="hometown" class="form-input text-black">
+
+                <label for="oResidenceType" class="block mt-4 mb-1 font-semibold">Residence Type *</label>
+                <select id="oResidenceType" name="residenceType" class="form-input text-black">
+                  <option value="">Select</option>
+                  <option value="Owned">Owned</option>
+                  <option value="Rented">Rented</option>
+                </select>
+
+                <label for="oHouseSize" class="block mt-4 mb-1 font-semibold">Size of House (describe property size and family type) *</label>
+                <input type="text" id="oHouseSize" name="houseSize" placeholder="e.g., 5 Marla house suitable for nuclear family" class="form-input text-black">
+              </fieldset>
+
+              <!-- Family Details -->
+              <fieldset class="border border-white/30 rounded-md p-4 mb-6">
+                <legend class="font-semibold text-lg text-white mb-2">Family Details</legend>
+                <label for="oTotalFamily" class="block mb-1 font-semibold">Total Family Members *</label>
+                <input type="number" id="oTotalFamily" name="familyMembers" required class="form-input text-black">
+
+                <label for="oFatherProfession" class="block mt-4 mb-1 font-semibold">Father's Profession *</label>
+                <input type="text" id="oFatherProfession" name="fatherProfession" class="form-input text-black">
+
+                <label for="oMotherProfession" class="block mt-4 mb-1 font-semibold">Mother's Profession *</label>
+                <input type="text" id="oMotherProfession" name="motherProfession" class="form-input text-black">
+
+                <label for="oBrothers" class="block mt-4 mb-1 font-semibold">Number of Brothers *</label>
+                <input type="number" id="oBrothers" name="brothers" class="form-input text-black">
+
+                <label for="oSisters" class="block mt-4 mb-1 font-semibold">Number of Sisters *</label>
+                <input type="number" id="oSisters" name="sisters" class="form-input text-black">
+
+                <label for="oMarriedBrothers" class="block mt-4 mb-1 font-semibold">Number of Married Brothers *</label>
+                <input type="number" id="oMarriedBrothers" name="marriedBrothers" class="form-input text-black">
+
+                <label for="oMarriedSisters" class="block mt-4 mb-1 font-semibold">Number of Married Sisters *</label>
+                <input type="number" id="oMarriedSisters" name="marriedSisters" class="form-input text-black">
+              </fieldset>
+
+              <!-- Overseas Details -->
+              <fieldset class="border border-white/30 rounded-md p-4 mb-6">
+                <legend class="font-semibold text-lg text-white mb-2">Overseas Details</legend>
+                <label for="oCountry" class="block mb-1 font-semibold">Country *</label>
+                <input type="text" id="oCountry" name="oCountry" required class="form-input text-black">
+
+                <label for="oVisaStatus" class="block mt-4 mb-1 font-semibold">Visa Status *</label>
+                <input type="text" id="oVisaStatus" name="oVisaStatus" required class="form-input text-black">
+
+                <label for="oOccupation" class="block mt-4 mb-1 font-semibold">Occupation Abroad *</label>
+                <input type="text" id="oOccupation" name="oOccupation" required class="form-input text-black">
+
+                <label for="oFamilyAbroad" class="block mt-4 mb-1 font-semibold">Family Abroad *</label>
+                <input type="text" id="oFamilyAbroad" name="oFamilyAbroad" required class="form-input text-black">
+
+                <label for="oFuturePlans" class="block mt-4 mb-1 font-semibold">Future Plans *</label>
+                <textarea id="oFuturePlans" name="oFuturePlans" rows="3" required class="form-input text-black"></textarea>
+              </fieldset>
+
+               <!-- Match Preferences -->
+              <fieldset class="border border-white/30 rounded-md p-4 mb-6">
+                <legend class="font-semibold text-lg text-white mb-2">Match Preferences</legend>
+                <label for="iPrefAge" class="block mb-1 font-semibold">Preferred Age Range *</label>
+                <input type="text" id="iPrefAge" name="iPrefAge" placeholder="e.g., 25-35" required class="form-input text-black">
+
+                <label for="iPrefHeight" class="block mt-4 mb-1 font-semibold">Minimum Height *</label>
+                <input type="text" id="iPrefHeight" name="iPrefHeight" placeholder="e.g., 5'4\"" required class="form-input text-black">
+
+                <label for="iPrefCity" class="block mt-4 mb-1 font-semibold">Preferred City/Region *</label>
+                <input type="text" id="iPrefCity" name="iPrefCity" required class="form-input text-black">
+
+                <label for="iPrefCaste" class="block mt-4 mb-1 font-semibold">Caste Preference *</label>
+                <input type="text" id="iPrefCaste" name="iPrefCaste" required class="form-input text-black">
+
+                <label for="iPrefEducation" class="block mt-4 mb-1 font-semibold">Education Preference *</label>
+                <input type="text" id="iPrefEducation" name="iPrefEducation" required class="form-input text-black">
+
+                <label for="iPrefSect" class="block mt-4 mb-1 font-semibold">Sect Preference *</label>
+                <select id="iPrefSect" name="iPrefSect" required class="form-input text-black">
+                  <option value="">Select</option>
+                  <option value="Sunni">Sunni</option>
+                  <option value="Shia">Shia</option>
+                  <option value="Deobandi">Deobandi</option>
+                  <option value="Barelvi">Barelvi</option>
+                  <option value="Ahl-e-Hadith">Ahl-e-Hadith</option>
+                  <option value="Other">Other</option>
+                </select>
+
+                <label for="iPrefMarital" class="block mt-4 mb-1 font-semibold">Preferred Marital Status *</label>
+                <select id="iPrefMarital" name="iPrefMarital" required class="form-input text-black">
+                  <option value="">Select</option>
+                  <option value="Single">Single</option>
+                  <option value="Divorced">Divorced</option>
+                  <option value="Widow">Widow</option>
+                </select>
+
+                <label for="iIntro" class="block mt-4 mb-1 font-semibold">Short Description / Intro (Self-written) *</label>
+                <textarea id="iIntro" name="iIntro" rows="3" required class="form-input text-black"></textarea>
+              </fieldset>
+
+              <!-- Photo Upload -->
+              <fieldset class="border border-white/30 rounded-md p-4 mb-6">
+                <legend class="font-semibold text-lg text-white mb-2">Photo & Media</legend>
+                <p class="italic mb-2">Female candidates may upload photos if comfortable; photos remain hidden and visible only to admin and shared family-to-family, never public.</p>
+                <p class="italic mb-4">Male candidates: Photo optional but recommended (must be recent, 15 days to 1 month old). Suspicious profiles: Admin may request video call verification.</p>
+                <input type="file" id="oPhoto" name="oPhoto" accept="image/*" class="form-input text-black">
+              </fieldset>
+
+              <!-- Contact Information -->
+              <fieldset class="border border-white/30 rounded-md p-4 mb-6">
+                <legend class="font-semibold text-lg text-white mb-2" data-lang-en="Contact Information" data-lang-ur="رابطے کی معلومات" data-lang-ro="Contact Information">Contact Information</legend>
+
+                <label for="oNumberOwner" class="block mb-1 font-semibold" data-lang-en="Whose number are you providing?" data-lang-ur="کس کا نمبر آپ فراہم کر رہے ہیں؟" data-lang-ro="Whose number are you providing?">Whose number are you providing?</label>
+                <select id="oNumberOwner" name="numberOwner" class="form-input text-black">
+                  <option value="" data-lang-en="Select" data-lang-ur="منتخب کریں" data-lang-ro="Select">Select</option>
+                  <option value="Self" data-lang-en="Self" data-lang-ur="خود" data-lang-ro="Self">Self</option>
+                  <option value="Parent" data-lang-en="Parent" data-lang-ur="والدین" data-lang-ro="Parent">Parent</option>
+                  <option value="Other" data-lang-en="Other" data-lang-ur="دیگر" data-lang-ro="Other">Other</option>
+                </select>
+
+                <label for="oNumberOwnerName" class="block mt-4 mb-1 font-semibold" data-lang-en="Name of the person whose number is provided" data-lang-ur="اس شخص کا نام جس کا نمبر فراہم کیا گیا ہے" data-lang-ro="Name of the person whose number is provided">Name of the person whose number is provided</label>
+                <input type="text" id="oNumberOwnerName" name="numberOwnerName" class="form-input text-black">
+
+                <label for="oWhatsApp" class="block mt-4 mb-1 font-semibold" data-lang-en="WhatsApp Number *" data-lang-ur="واٹس ایپ نمبر *" data-lang-ro="WhatsApp Number *">WhatsApp Number *</label>
+                <input type="tel" id="oWhatsApp" name="whatsApp" required class="form-input text-black">
+
+<label for="oMakePublic" class="block mb-1 font-semibold" data-lang-en="Do you want to make your mobile number public or remain private?" data-lang-ur="کیا آپ اپنا موبائل نمبر پبلک کرنا چاہتے ہیں یا پرائیویٹ رکھنا چاہتے ہیں؟" data-lang-ro="Do you want to make your mobile number public or remain private?">Do you want to make your mobile number public or remain private?</label>
+                <select id="oMakePublic" name="makePublic" class="form-input text-black">
+                  <option value="" data-lang-en="Select" data-lang-ur="منتخب کریں" data-lang-ro="Select">Select</option>
+                  <option value="Public" data-lang-en="Public" data-lang-ur="پبلک" data-lang-ro="Public">Public</option>
+                  <option value="Private" data-lang-en="Private" data-lang-ur="پرائیویٹ" data-lang-ro="Private">Private</option>
+                </select>
+
+
+
+                <p class="text-sm text-white italic mb-4" data-lang-en="Note: Male candidates' numbers are public by default. Female candidates' numbers are shared only with family consent." data-lang-ur="نوٹ: مرد امیدواروں کے نمبر ڈیفالٹ طور پر پبلک ہیں۔ عورت امیدواروں کے نمبر صرف خاندانی رضامندی کے ساتھ شیئر کیے جاتے ہیں۔" data-lang-ro="Note: Male candidates' numbers are public by default. Female candidates' numbers are shared only with family consent.">
+                  Note: Male candidates' numbers are public by default. Female candidates' numbers are shared only with family consent.
+                </p>
+
+
+              </fieldset>
+
+              <!-- Affidavit -->
+              <div class="mb-6">
+                <p class="text-white mb-2">I give affidavit that I have provided all these details with my truth, I agree to it.</p>
+                <select id="oAffidavitSelect" name="oAffidavitSelect" required class="form-input text-black">
+                  <option value="">Select</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+                <div id="oAffidavitError" class="hidden mt-2 p-2 bg-red-600 bg-opacity-20 border border-red-400 rounded-lg text-red-200 text-sm">
+                  You must select "Yes" to agree to the affidavit.
+                </div>
+              </div>
+
+              <div class="g-recaptcha" data-sitekey="6Ld05cMrAAAAANKZ-GEK4AvlkSx9ifaYQvIxDu9N"></div>
+              <button type="submit" class="user-type-btn w-full">Submit Overseas Pakistani Marriage Candidate Profile</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal for International Muslims -->
+      <div id="internationalModal" class="modal">
+        <div class="modal-content" style="background: linear-gradient(135deg, #4b6cb7 0%, #182848 50%, #D4AF37 100%);">
+          <span class="close-btn" id="closeInternational">&times;</span>
+          <div class="modal-body">
+            <form id="internationalForm" class="candidate-form p-6 rounded-lg shadow-lg text-white" style="background: linear-gradient(135deg, #4b6cb7 0%, #182848 50%, #D4AF37 100%);" novalidate>
+              <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-bold text-white glossy-text" data-lang-en="International Muslim Marriage Candidate Profile" data-lang-ur="بین الاقوامی مسلمان شادی امیدوار پروفائل" data-lang-ro="International Muslim Marriage Candidate Profile">International Muslim Marriage Candidate Profile</h2>
+              </div>
+              <!-- Encouragement Text Ticker -->
+              <div class="mb-6 bg-white/10 rounded-lg p-3 border border-white/20">
+                <div class="text-center text-white text-sm italic font-semibold">
+                  Bismillah-ur-Rahman<br>
+                  Reduce your own demands, make marriage easy.
+                </div>
+              </div>
+              <!-- Basic Details -->
+              <fieldset class="border border-white/30 rounded-md p-4 mb-6 mt-4">
+                <legend class="font-semibold text-lg text-white mb-2">Basic Details</legend>
+                <label for="iName" class="block mb-1 font-semibold">Full Name *</label>
+                <input type="text" id="iName" name="iName" required class="form-input text-black">
+
+                <label for="iGender" class="block mt-4 mb-1 font-semibold">Gender *</label>
+                <select id="iGender" name="iGender" required class="form-input text-black">
+                  <option value="">Select</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+
+                <label for="iAge" class="block mt-4 mb-1 font-semibold">Age *</label>
+                <input type="number" id="iAge" name="iAge" min="18" max="100" required class="form-input text-black">
+
+                <label for="iHeight" class="block mt-4 mb-1 font-semibold">Height *</label>
+                <input type="text" id="iHeight" name="iHeight" placeholder="e.g., 5'6\"" required class="form-input text-black">
+
+                <label for="iMaritalStatus" class="block mt-4 mb-1 font-semibold">Marital Status *</label>
+                <select id="iMaritalStatus" name="iMaritalStatus" required class="form-input text-black">
+                  <option value="">Select</option>
+                  <option value="Single">Single</option>
+                  <option value="Divorced">Divorced</option>
+                  <option value="Widow">Widow</option>
+                  <option value="Second Marriage">Second Marriage</option>
+                </select>
+
+                <button id="iChildrenButton" type="button" style="display:none; margin-top: 10px;" class="user-type-btn" onclick="showChildren('childrenPopupI')">How many children you have and what is their age</button>
+
+                <div id="childrenPopupI" style="display:none; margin-top: 10px;">
+                  <label for="childrenInfoI" class="block mb-1 font-semibold">Kitne bachay hain? (Number and ages) *</label>
+                  <textarea id="childrenInfoI" name="childrenInfoI" rows="3" required class="form-input text-black"></textarea>
+                </div>
+
+                <label for="iBodyType" class="block mt-4 mb-1 font-semibold">Body Type *</label>
+                <select id="iBodyType" name="iBodyType" required class="form-input text-black">
+                  <option value="">Select</option>
+                  <option value="Slim">Slim</option>
+                  <option value="Average">Average</option>
+                  <option value="Healthy">Healthy</option>
+                  <option value="Other">Other</option>
+                </select>
+
+                <label for="iEducation" class="block mt-4 mb-1 font-semibold">Education (Qualification) *</label>
+                <input type="text" id="iEducation" name="iEducation" required class="form-input text-black">
+
+                <label for="iJobTitle" class="block mt-4 mb-1 font-semibold">Job Title / Business Type *</label>
+                <input type="text" id="iJobTitle" name="iJobTitle" required class="form-input text-black">
+
+                <label for="iIncome" class="block mt-4 mb-1 font-semibold">Monthly Income (Range) *</label>
+                <select id="iIncome" name="iIncome" required class="form-input text-black">
+                  <option value="">Select</option>
+                  <option value="Under 50k">Under 50k</option>
+                  <option value="50k-1L">50k-1L</option>
+                  <option value="1L-2L">1L-2L</option>
+                  <option value="2L-5L">2L-5L</option>
+                  <option value="Above 5L">Above 5L</option>
+                </select>
+
+                <label for="iWorkNature" class="block mt-4 mb-1 font-semibold">Work Nature *</label>
+                <select id="iWorkNature" name="iWorkNature" required class="form-input text-black">
+                  <option value="">Select</option>
+                  <option value="Govt">Govt</option>
+                  <option value="Private">Private</option>
+                  <option value="Business">Business</option>
+                  <option value="Self-Employed">Self-Employed</option>
+                  <option value="Not Working">Not Working</option>
+                </select>
+              </fieldset>
+
+              <!-- Religious & Cultural Info -->
+              <fieldset class="border border-white/30 rounded-md p-4 mb-6">
+                <legend class="font-semibold text-lg text-white mb-2">Religious & Cultural Info</legend>
+                <label for="iReligion" class="block mb-1 font-semibold">Religion/Sect *</label>
+                <select id="iReligion" name="iReligion" required class="form-input text-black">
+                  <option value="">Select</option>
+                  <option value="Sunni">Sunni</option>
+                  <option value="Shia">Shia</option>
+                  <option value="Deobandi">Deobandi</option>
+                  <option value="Barelvi">Barelvi</option>
+                  <option value="Ahl-e-Hadith">Ahl-e-Hadith</option>
+                  <option value="Other">Other</option>
+                </select>
+                <label for="iLanguages" class="block mt-4 mb-1 font-semibold">Mother Tongue / Languages *</label>
+                <input type="text" id="iLanguages" name="iLanguages" required class="form-input text-black">
+                <label for="iCaste" class="block mt-4 mb-1 font-semibold">Caste (Optional)</label>
+                <input type="text" id="iCaste" name="iCaste" class="form-input text-black">
+              </fieldset>
+
+              <!-- Residence & Property -->
+              <fieldset class="border border-white/30 rounded-md p-4 mb-6">
+                <legend class="font-semibold text-lg text-white mb-2">Residence & Property</legend>
+                <label for="iCurrentCity" class="block mb-1 font-semibold">Current City/Area *</label>
+                <input type="text" id="iCurrentCity" name="iCurrentCity" required class="form-input text-black">
+
+                <label for="iHometown" class="block mt-4 mb-1 font-semibold">Permanent Hometown *</label>
+                <input type="text" id="iHometown" name="iHometown" required class="form-input text-black">
+
+                <label for="iResidenceType" class="block mt-4 mb-1 font-semibold">Residence Type *</label>
+                <select id="iResidenceType" name="iResidenceType" required class="form-input text-black">
+                  <option value="">Select</option>
+                  <option value="Owned">Owned</option>
+                  <option value="Rented">Rented</option>
+                </select>
+
+                <label for="iHouseSize" class="block mt-4 mb-1 font-semibold">Size of House (describe property size and family type) *</label>
+                <input type="text" id="iHouseSize" name="iHouseSize" placeholder="e.g., 5 Marla house suitable for nuclear family" required class="form-input text-black">
+              </fieldset>
+
+              <!-- Family Details -->
+              <fieldset class="border border-white/30 rounded-md p-4 mb-6">
+                <legend class="font-semibold text-lg text-white mb-2">Family Details</legend>
+                <label for="iTotalFamily" class="block mb-1 font-semibold">Total Family Members *</label>
+                <input type="number" id="iTotalFamily" name="iTotalFamily" required class="form-input text-black">
+
+                <label for="iFatherProfession" class="block mt-4 mb-1 font-semibold">Father's Profession *</label>
+                <input type="text" id="iFatherProfession" name="iFatherProfession" required class="form-input text-black">
+
+                <label for="iMotherProfession" class="block mt-4 mb-1 font-semibold">Mother's Profession *</label>
+                <input type="text" id="iMotherProfession" name="iMotherProfession" required class="form-input text-black">
+
+                <label for="iBrothers" class="block mt-4 mb-1 font-semibold">Number of Brothers *</label>
+                <input type="number" id="iBrothers" name="iBrothers" required class="form-input text-black">
+
+                <label for="iSisters" class="block mt-4 mb-1 font-semibold">Number of Sisters *</label>
+                <input type="number" id="iSisters" name="iSisters" required class="form-input text-black">
+
+                <label for="iMarriedBrothers" class="block mt-4 mb-1 font-semibold">Number of Married Brothers *</label>
+                <input type="number" id="iMarriedBrothers" name="iMarriedBrothers" required class="form-input text-black">
+
+                <label for="iMarriedSisters" class="block mt-4 mb-1 font-semibold">Number of Married Sisters *</label>
+                <input type="number" id="iMarriedSisters" name="iMarriedSisters" required class="form-input text-black">
+              </fieldset>
+
+              <!-- Overseas Details -->
+              <fieldset class="border border-white/30 rounded-md p-4 mb-6">
+                <legend class="font-semibold text-lg text-white mb-2">Overseas Details</legend>
+                <label for="iCountry" class="block mb-1 font-semibold">Country *</label>
+                <input type="text" id="iCountry" name="iCountry" required class="form-input text-black">
+                <label for="iVisaStatus" class="block mt-4 mb-1 font-semibold">Visa Status *</label>
+                <input type="text" id="iVisaStatus" name="iVisaStatus" required class="form-input text-black">
+                <label for="iOccupation" class="block mt-4 mb-1 font-semibold">Occupation Abroad *</label>
+                <input type="text" id="iOccupation" name="iOccupation" required class="form-input text-black">
+                <label for="iFamilyAbroad" class="block mt-4 mb-1 font-semibold">Family Abroad *</label>
+                <input type="text" id="iFamilyAbroad" name="iFamilyAbroad" required class="form-input text-black">
+                <label for="iFuturePlans" class="block mt-4 mb-1 font-semibold">Future Plans *</label>
+                <textarea id="iFuturePlans" name="iFuturePlans" rows="3" required class="form-input text-black"></textarea>
+              </fieldset>
+
+              <!-- Match Preferences -->
+              <fieldset class="border border-white/30 rounded-md p-4 mb-6">
+                <legend class="font-semibold text-lg text-white mb-2">Match Preferences</legend>
+                <label for="iPrefAge" class="block mb-1 font-semibold">Preferred Age Range *</label>
+                <input type="text" id="iPrefAge" name="iPrefAge" placeholder="e.g., 25-35" required class="form-input text-black">
+
+                <label for="iPrefHeight" class="block mt-4 mb-1 font-semibold">Minimum Height *</label>
+                <input type="text" id="iPrefHeight" name="iPrefHeight" placeholder="e.g., 5'4\"" required class="form-input text-black">
+
+                <label for="iPrefCity" class="block mt-4 mb-1 font-semibold">Preferred City/Region *</label>
+                <input type="text" id="iPrefCity" name="iPrefCity" required class="form-input text-black">
+
+                <label for="iPrefCaste" class="block mt-4 mb-1 font-semibold">Caste Preference *</label>
+                <input type="text" id="iPrefCaste" name="iPrefCaste" required class="form-input text-black">
+
+                <label for="iPrefEducation" class="block mt-4 mb-1 font-semibold">Education Preference *</label>
+                <input type="text" id="iPrefEducation" name="iPrefEducation" required class="form-input text-black">
+
+                <label for="iPrefSect" class="block mt-4 mb-1 font-semibold">Sect Preference *</label>
+                <select id="iPrefSect" name="iPrefSect" required class="form-input text-black">
+                  <option value="">Select</option>
+                  <option value="Sunni">Sunni</option>
+                  <option value="Shia">Shia</option>
+                  <option value="Deobandi">Deobandi</option>
+                  <option value="Barelvi">Barelvi</option>
+                  <option value="Ahl-e-Hadith">Ahl-e-Hadith</option>
+                  <option value="Other">Other</option>
+                </select>
+
+                <label for="iPrefMarital" class="block mt-4 mb-1 font-semibold">Preferred Marital Status *</label>
+                <select id="iPrefMarital" name="iPrefMarital" required class="form-input text-black">
+                  <option value="">Select</option>
+                  <option value="Single">Single</option>
+                  <option value="Divorced">Divorced</option>
+                  <option value="Widow">Widow</option>
+                </select>
+
+                <label for="iIntro" class="block mt-4 mb-1 font-semibold">Short Description / Intro (Self-written) *</label>
+                <textarea id="iIntro" name="iIntro" rows="3" required class="form-input text-black"></textarea>
+              </fieldset>
+
+              <!-- Additional Details -->
+              <fieldset class="border border-white/30 rounded-md p-4 mb-6">
+                <legend class="font-semibold text-lg text-white mb-2">Additional Details</legend>
+                <label for="iReligionConfirm" class="block mb-1 font-semibold">Religion Confirmation *</label>
+                <select id="iReligionConfirm" name="iReligionConfirm" required class="form-input text-black">
+                  <option value="">Select</option>
+                  <option value="Muslim">Muslim</option>
+                  <option value="Other">Other</option>
+                </select>
+
+                <label for="iCitizenship" class="block mt-4 mb-1 font-semibold">Citizenship *</label>
+                <input type="text" id="iCitizenship" name="iCitizenship" required class="form-input text-black">
+              </fieldset>
+
+              <!-- Photo Upload -->
+              <fieldset class="border border-white/30 rounded-md p-4 mb-6">
+                <legend class="font-semibold text-lg text-white mb-2">Photo & Media</legend>
+                <p class="mb-2"><em>Female candidates may upload photos if comfortable; photos remain hidden and visible only to admin and shared family-to-family, never public.</em></p>
+                <p class="mb-4"><em>Male candidates: Photo optional but recommended (must be recent, 15 days to 1 month old). Suspicious profiles: Admin may request video call verification.</em></p>
+                <input type="file" id="iPhoto" name="iPhoto" accept="image/*" class="form-input text-black">
+              </fieldset>
+
+              <!-- Contact Information -->
+              <fieldset class="border border-white/30 rounded-md p-4 mb-6">
+                <legend class="font-semibold text-lg text-white mb-2" data-lang-en="Contact Information" data-lang-ur="رابطے کی معلومات" data-lang-ro="Contact Information">Contact Information</legend>
+
+                <label for="iNumberOwner" class="block mb-1 font-semibold" data-lang-en="Whose number are you providing?" data-lang-ur="کس کا نمبر آپ فراہم کر رہے ہیں؟" data-lang-ro="Whose number are you providing?">Whose number are you providing?</label>
+                <select id="iNumberOwner" name="iNumberOwner" class="form-input text-black">
+                  <option value="" data-lang-en="Select" data-lang-ur="منتخب کریں" data-lang-ro="Select">Select</option>
+                  <option value="Self" data-lang-en="Self" data-lang-ur="خود" data-lang-ro="Self">Self</option>
+                  <option value="Parent" data-lang-en="Parent" data-lang-ur="والدین" data-lang-ro="Parent">Parent</option>
+                  <option value="Other" data-lang-en="Other" data-lang-ur="دیگر" data-lang-ro="Other">Other</option>
+                </select>
+
+                <label for="iNumberOwnerName" class="block mt-4 mb-1 font-semibold" data-lang-en="Name of the person whose number is provided" data-lang-ur="اس شخص کا نام جس کا نمبر فراہم کیا گیا ہے" data-lang-ro="Name of the person whose number is provided">Name of the person whose number is provided</label>
+                <input type="text" id="iNumberOwnerName" name="iNumberOwnerName" class="form-input text-black">
+
+                <label for="iWhatsApp" class="block mt-4 mb-1 font-semibold" data-lang-en="WhatsApp Number *" data-lang-ur="واٹس ایپ نمبر *" data-lang-ro="WhatsApp Number *">WhatsApp Number *</label>
+                <input type="tel" id="iWhatsApp" name="iWhatsApp" required class="form-input text-black">
+
+<label for="iMakePublic" class="block mb-1 font-semibold" data-lang-en="Do you want to make your mobile number public or remain private?" data-lang-ur="کیا آپ اپنا موبائل نمبر پبلک کرنا چاہتے ہیں یا پرائیویٹ رکھنا چاہتے ہیں؟" data-lang-ro="Do you want to make your mobile number public or remain private?">Do you want to make your mobile number public or remain private?</label>
+                <select id="iMakePublic" name="iMakePublic" class="form-input text-black">
+                  <option value="" data-lang-en="Select" data-lang-ur="منتخب کریں" data-lang-ro="Select">Select</option>
+                  <option value="Public" data-lang-en="Public" data-lang-ur="پبلک" data-lang-ro="Public">Public</option>
+                  <option value="Private" data-lang-en="Private" data-lang-ur="پرائیویٹ" data-lang-ro="Private">Private</option>
+                </select>
+
+
+
+                <p class="text-sm text-white italic mb-4" data-lang-en="Note: Male candidates' numbers are public by default. Female candidates' numbers are shared only with family consent." data-lang-ur="نوٹ: مرد امیدواروں کے نمبر ڈیفالٹ طور پر پبلک ہیں۔ عورت امیدواروں کے نمبر صرف خاندانی رضامندی کے ساتھ شیئر کیے جاتے ہیں۔" data-lang-ro="Note: Male candidates' numbers are public by default. Female candidates' numbers are shared only with family consent.">
+                  Note: Male candidates' numbers are public by default. Female candidates' numbers are shared only with family consent.
+                </p>
+
+
+              </fieldset>
+
+              <!-- Affidavit -->
+              <div class="mb-6">
+                <p class="text-white mb-2">I give affidavit that I have provided all these details with my truth, I agree to it.</p>
+                <select id="iAffidavitSelect" name="iAffidavitSelect" required class="form-input text-black">
+                  <option value="">Select</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
+                <div id="iAffidavitError" class="hidden mt-2 p-2 bg-red-600 bg-opacity-20 border border-red-400 rounded-lg text-red-200 text-sm">
+                  You must select "Yes" to agree to the affidavit.
+                </div>
+              </div>
+
+              <div class="g-recaptcha" data-sitekey="6Ld05cMrAAAAANKZ-GEK4AvlkSx9ifaYQvIxDu9N"></div>
+              <button type="submit" class="user-type-btn w-full">Submit International Muslim Marriage Candidate Profile</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Verification Modal -->
+      <div id="verificationModal" class="modal">
+        <div class="modal-content">
+          <span class="close-btn" id="closeVerification">&times;</span>
+          <div class="modal-body">
+            <h2 class="text-2xl font-bold mb-4 text-center">Verification Required</h2>
+            <p class="mb-4 text-center">Please enter the verification code shown below to proceed with submission:</p>
+            <div class="text-center mb-4">
+              <span id="verificationCode" class="text-3xl font-bold text-blue-600 bg-gray-100 px-4 py-2 rounded"></span>
+            </div>
+            <label for="userCode" class="block mb-2 font-semibold">Enter Code:</label>
+            <input type="text" id="userCode" class="form-input text-black mb-4" placeholder="Enter the code">
+            <div id="verificationError" class="hidden mb-4 p-3 bg-red-600 bg-opacity-20 border border-red-400 rounded-lg text-red-200 text-center text-sm">
+              Incorrect code. Please try again.
+            </div>
+            <button id="verifyBtn" class="user-type-btn w-full">Verify and Submit</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Thank You Modal -->
+      <div id="thankYouModal" class="modal">
+        <div class="modal-content">
+          <span class="close-btn" id="closeThankYou">&times;</span>
+          <div class="modal-body">
+            <h2 class="text-2xl font-bold mb-4 text-center text-green-600">Thank You!</h2>
+            <p class="mb-4 text-center" id="thankYouMessage"></p>
+            <button id="closeThankYouBtn" class="user-type-btn w-full">Close</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error Modal -->
+      <div id="errorModal" class="modal">
+        <div class="modal-content">
+          <span class="close-btn" id="closeError">&times;</span>
+          <div class="modal-body">
+            <h2 class="text-2xl font-bold mb-4 text-center text-red-600">Submission Failed</h2>
+            <p class="mb-4 text-center">Your form could not be submitted due to missing/invalid details. Please check and try again.</p>
+            <button id="closeErrorBtn" class="user-type-btn w-full">Close</button>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </main>
+
+  <script>
+    // Global variable for current submission during verification
+    let currentSubmission = { formData: null, photoFile: null, category: null, form: null };
+    let generatedCode = '';
+    let currentQuestion = '';
+    let currentAnswer = '';
+    let currentUser = null;
+
+    // Check authentication state
+    window.addEventListener('DOMContentLoaded', () => {
+      onAuthStateChanged(window.auth, (user) => {
+        if (user && user.emailVerified) {
+          currentUser = user;
+          // Store verification status
+          localStorage.setItem('verified', 'true');
+        } else {
+          // No user is signed in or not verified, redirect to signup with return
+          const currentUrl = encodeURIComponent(window.location.href);
+          window.location.href = `signup.html?return=${currentUrl}`;
+        }
+      });
+    });
+
+    // Modal functionality
+    const pakistaniBtn = document.getElementById('btnPakistani');
+    const overseasBtn = document.getElementById('btnOverseas');
+    const internationalBtn = document.getElementById('btnInternational');
+
+    const pakistaniModal = document.getElementById('pakistaniModal');
+    const overseasModal = document.getElementById('overseasModal');
+    const internationalModal = document.getElementById('internationalModal');
+    const verificationModal = document.getElementById('verificationModal');
+
+    const closePakistani = document.getElementById('closePakistani');
+    const closeOverseas = document.getElementById('closeOverseas');
+    const closeInternational = document.getElementById('closeInternational');
+    const closeVerification = document.getElementById('closeVerification');
+    const verifyBtn = document.getElementById('verifyBtn');
+    const verificationCode = document.getElementById('verificationCode');
+    const userCode = document.getElementById('userCode');
+    const verificationError = document.getElementById('verificationError');
+
+    // Button click handlers to open modals
+    pakistaniBtn.onclick = function() {
+      if (!document.getElementById('affidavitCheck').checked) {
+        document.getElementById('affidavitError').classList.remove('hidden');
+        return;
+      }
+      pakistaniModal.style.display = 'block';
+    };
+
+    overseasBtn.onclick = function() {
+      if (!document.getElementById('affidavitCheck').checked) {
+        document.getElementById('affidavitError').classList.remove('hidden');
+        return;
+      }
+      overseasModal.style.display = 'block';
+    };
+
+    internationalBtn.onclick = function() {
+      if (!document.getElementById('affidavitCheck').checked) {
+        document.getElementById('affidavitError').classList.remove('hidden');
+        return;
+      }
+      internationalModal.style.display = 'block';
+    };
+
+    // Close modal handlers
+    closePakistani.onclick = function() {
+      pakistaniModal.style.display = 'none';
+    };
+
+    closeOverseas.onclick = function() {
+      overseasModal.style.display = 'none';
+    };
+
+    closeInternational.onclick = function() {
+      internationalModal.style.display = 'none';
+    };
+
+    closeVerification.onclick = function() {
+      verificationModal.style.display = 'none';
+    };
+
+    // Function to toggle required attributes based on gender
+    function toggleRequiredFields(form, gender) {
+      // List of fields to be required
+      const requiredFieldIds = [
+        'pName', 'pCurrentCity', 'pTotalFamily', 'pEducation', 'pAge', 'pIntro',
+        'oName', 'oCurrentCity', 'oTotalFamily', 'oEducation', 'oAge', 'oIntro',
+        'iName', 'iCurrentCity', 'iTotalFamily', 'iEducation', 'iAge', 'iIntro'
+      ];
+
+      // Remove required attribute from all fields first
+      const allFields = form.querySelectorAll('input, select, textarea');
+      allFields.forEach(field => {
+        field.required = false;
+      });
+
+      // Set required attribute only on specified fields if they exist in the form
+      requiredFieldIds.forEach(id => {
+        const field = document.getElementById(id);
+        if (field && form.contains(field)) {
+          field.required = true;
+        }
+      });
+    }
+
+    // Function to toggle children button
+    function toggleChildrenButton(maritalId, buttonId) {
+      const marital = document.getElementById(maritalId);
+      const button = document.getElementById(buttonId);
+      if (marital.value === 'Divorced' || marital.value === 'Widow' || marital.value === 'Second Marriage') {
+        button.style.display = 'block';
+      } else {
+        button.style.display = 'none';
+      }
+    }
+
+    // Function to show children popup
+    function showChildren(popupId) {
+      document.getElementById(popupId).style.display = 'block';
+    }
+
+    // Close modals when clicking outside
+    window.onclick = function(event) {
+      if (event.target == pakistaniModal) {
+        pakistaniModal.style.display = 'none';
+      }
+      if (event.target == overseasModal) {
+        overseasModal.style.display = 'none';
+      }
+      if (event.target == internationalModal) {
+        internationalModal.style.display = 'none';
+      }
+      if (event.target == verificationModal) {
+        verificationModal.style.display = 'none';
+      }
+    };
+
+      // Add event listeners to gender selects to toggle required fields
+      document.getElementById('pGender').addEventListener('change', function() {
+        toggleRequiredFields(document.getElementById('pakistaniForm'), this.value);
+      });
+      document.getElementById('oGender').addEventListener('change', function() {
+        toggleRequiredFields(document.getElementById('overseasForm'), this.value);
+      });
+      document.getElementById('iGender').addEventListener('change', function() {
+        toggleRequiredFields(document.getElementById('internationalForm'), this.value);
+      });
+
+      // Add event listeners to marital status selects to toggle children button
+      document.getElementById('pMaritalStatus').addEventListener('change', function() {
+        toggleChildrenButton('pMaritalStatus', 'pChildrenButton');
+      });
+      document.getElementById('oMaritalStatus').addEventListener('change', function() {
+        toggleChildrenButton('oMaritalStatus', 'oChildrenButton');
+      });
+      document.getElementById('iMaritalStatus').addEventListener('change', function() {
+        toggleChildrenButton('iMaritalStatus', 'iChildrenButton');
+      });
+
+      // Validation function
+      function validateForm(form, affidavitSelectId, affidavitErrorId, childrenPopupId, childrenInfoId) {
+        // Check affidavit
+        const affidavitSelect = document.getElementById(affidavitSelectId);
+        if (affidavitSelect.value !== 'Yes') {
+          document.getElementById(affidavitErrorId).classList.remove('hidden');
+          return false;
+        } else {
+          document.getElementById(affidavitErrorId).classList.add('hidden');
+        }
+
+        // Check required fields
+        const requiredFields = form.querySelectorAll('[required]');
+        for (let field of requiredFields) {
+          if (!field.value.trim()) {
+            return false;
+          }
+        }
+
+        // Check children if marital status not single
+        const maritalStatus = form.querySelector('[name*="MaritalStatus"]');
+        if (maritalStatus && maritalStatus.value !== 'Single') {
+          const childrenInfo = document.getElementById(childrenInfoId);
+          if (!childrenInfo || !childrenInfo.value.trim()) {
+            return false;
+          }
+        }
+
+        return true;
+      }
+
+      // Verification modal logic
+      function generateVerificationCode() {
+        return Math.floor(100000 + Math.random() * 900000).toString();
+      }
+
+      function openVerificationModal(formData, photoFile, category, form) {
+        currentSubmission = { formData, photoFile, category, form };
+        generatedCode = generateVerificationCode();
+        verificationCode.textContent = generatedCode;
+        userCode.value = '';
+        verificationError.classList.add('hidden');
+        verificationModal.style.display = 'block';
+      }
+
+      verifyBtn.onclick = async function() {
+        if (userCode.value.trim() === generatedCode) {
+          verificationModal.style.display = 'none';
+          // Submit to Firebase
+          const result = await window.submitProfileToFirestore(currentSubmission.formData, currentSubmission.category, currentSubmission.photoFile);
+          if (result.success) {
+            currentSubmission.form.reset();
+            showThankYouModal(result.id, currentSubmission.formData[Object.keys(currentSubmission.formData)[0]], currentSubmission.formData[Object.keys(currentSubmission.formData)[0]]);
+          } else {
+            showErrorModal();
+          }
+        } else {
+          verificationError.classList.remove('hidden');
+        }
+      };
+
+      // Updated form submissions to open verification modal instead of direct submission
+      document.getElementById('pakistaniForm').onsubmit = function(e) {
+        e.preventDefault();
+        const form = e.target;
+        if (!validateForm(form, 'pAffidavitSelect', 'pAffidavitError', 'childrenPopup', 'childrenInfo')) {
+          return;
+        }
+        const formData = {};
+        for (let element of form.elements) {
+          if (element.name && element.type !== 'submit' && element.type !== 'file') {
+            formData[element.name] = element.value;
+          }
+        }
+        if (formData.pMaritalStatus !== 'Single') {
+          formData.childrenInfo = document.getElementById('childrenInfo').value;
+        }
+        const photoFile = document.getElementById('pPhoto').files[0];
+        openVerificationModal(formData, photoFile, 'pakistani', form);
+      };
+
+      document.getElementById('overseasForm').onsubmit = function(e) {
+        e.preventDefault();
+        const form = e.target;
+        if (!validateForm(form, 'oAffidavitSelect', 'oAffidavitError', 'childrenPopupO', 'childrenInfoO')) {
+          return;
+        }
+        const formData = {};
+        for (let element of form.elements) {
+          if (element.name && element.type !== 'submit' && element.type !== 'file') {
+            formData[element.name] = element.value;
+          }
+        }
+        if (formData.oMaritalStatus !== 'Single') {
+          formData.childrenInfo = document.getElementById('childrenInfoO').value;
+        }
+        const photoFile = document.getElementById('oPhoto').files[0];
+        openVerificationModal(formData, photoFile, 'overseas', form);
+      };
+
+      document.getElementById('internationalForm').onsubmit = function(e) {
+        e.preventDefault();
+        const form = e.target;
+        if (!validateForm(form, 'iAffidavitSelect', 'iAffidavitError', 'childrenPopupI', 'childrenInfoI')) {
+          return;
+        }
+        const formData = {};
+        for (let element of form.elements) {
+          if (element.name && element.type !== 'submit' && element.type !== 'file') {
+            formData[element.name] = element.value;
+          }
+        }
+        if (formData.iMaritalStatus !== 'Single') {
+          formData.childrenInfo = document.getElementById('childrenInfoI').value;
+        }
+        const photoFile = document.getElementById('iPhoto').files[0];
+        openVerificationModal(formData, photoFile, 'international', form);
+      };
+
+  // Show thank you modal with profile info
+  function showThankYouModal(profileId, name, city) {
+    const thankYouModal = document.getElementById('thankYouModal');
+    const thankYouMessage = document.getElementById('thankYouMessage');
+    thankYouMessage.textContent = `شکریہ ہماری پلیٹ فارم استعمال کرنے کا۔ امیدوار: ${name}, ID: ${profileId}, پروفائل#: ${profileId}۔ ہمیں دعاوں میں یاد رکھیں۔ اگر ایڈمن کو شک ہو تو وہ کال کرے گا۔ 24 گھنٹوں میں منظوری ہو جائے گی۔ اپنے دوستوں اور رشتہ داروں سے شیئر کریں۔ جزاک اللہ خیر۔`;
+    thankYouModal.style.display = 'block';
+  }
+
+  // Show error modal
+  function showErrorModal() {
+    const errorModal = document.getElementById('errorModal');
+    errorModal.style.display = 'block';
+  }
+
+  // Close modals handlers
+  document.getElementById('closeThankYou').onclick = function() {
+    document.getElementById('thankYouModal').style.display = 'none';
+  };
+  document.getElementById('closeThankYouBtn').onclick = function() {
+    document.getElementById('thankYouModal').style.display = 'none';
+  };
+  document.getElementById('closeError').onclick = function() {
+    document.getElementById('errorModal').style.display = 'none';
+  };
+  document.getElementById('closeErrorBtn').onclick = function() {
+    document.getElementById('errorModal').style.display = 'none';
+  };
+
+</script>
+</body>
+</html>

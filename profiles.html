@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profiles - HalalMatch</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="assets/css/premium-background.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
+  <script>
+    // Check for JWT token in cookies
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    const token = getCookie('token');
+    if (!token) {
+      // Redirect to login if no token
+      window.location.href = 'login.html?return=profiles.html';
+    }
+  </script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script type="text/javascript" src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js"></script>
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCSdpzhy_WVaLLAyFYjHpglChbjoY-hUGM",
+      authDomain: "halalmatchcom786.firebaseapp.com",
+      projectId: "halalmatchcom786",
+      storageBucket: "halalmatchcom786.firebasestorage.app",
+      messagingSenderId: "781367758589",
+      appId: "1:781367758589:web:da4377d96fc07af0933894",
+      measurementId: "G-1HBFGDECRF"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Make Firebase globally available
+    window.auth = auth;
+    window.db = db;
+    window.collection = collection;
+    window.getDocs = getDocs;
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
+    html {
+      background: linear-gradient(135deg, #f5c518 0%, #ffffff 100%);
+      backdrop-filter: blur(1px);
+      min-height: 100vh;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      position: relative;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      color: #000000;
+      text-shadow: none;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        linear-gradient(45deg, #f5c518, #ffffff, #f5c518),
+        radial-gradient(circle at 25% 25%, rgba(245,193,24,0.05) 0%, transparent 25%),
+        radial-gradient(circle at 75% 75%, rgba(245,193,24,0.05) 0%, transparent 25%);
+      pointer-events: none;
+      z-index: -1;
+    }
+    .bg-scrim {
+      background: rgba(10,12,16,0.92);
+      backdrop-filter: blur(1px);
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    .btn-3d {
+      transform: translateY(0);
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+      text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+      padding: 0.75rem 1.5rem;
+      font-size: 1.125rem;
+      border-radius: 50px;
+      background: linear-gradient(145deg, #d4af37, #ffffff);
+      color: #000000;
+      box-shadow:
+        5px 5px 10px #b38f0a,
+        -5px -5px 10px #fff94a;
+      cursor: pointer;
+      user-select: none;
+      font-weight: 600;
+      text-align: center;
+      display: inline-block;
+      border: none;
+    }
+    .btn-3d:hover {
+      transform: translateY(-4px);
+      box-shadow:
+        8px 8px 15px #b38f0a,
+        -8px -8px 15px #fff94a;
+      background: linear-gradient(145deg, #ffffff, #d4af37);
+    }
+
+    .glossy-text {
+      text-shadow: 0 0 10px rgba(255,255,255,0.5);
+    }
+
+    @media (max-width: 640px) {
+      #profileList {
+        gap: 1rem;
+      }
+      #profileList .bg-gradient-to-br {
+        padding: 0.75rem;
+      }
+      #profileList img {
+        height: 8rem;
+      }
+      #profileList h3 {
+        font-size: 1rem;
+      }
+      #profileList p {
+        font-size: 0.85rem;
+      }
+      /* Filter section mobile improvements */
+      .filter-section {
+        padding: 0.75rem !important;
+        margin-bottom: 1rem !important;
+      }
+      .filter-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.5rem !important;
+      }
+      .filter-grid select,
+      .filter-grid input {
+        padding: 0.5rem !important;
+        font-size: 0.875rem !important;
+      }
+    }
+
+    .language-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: linear-gradient(145deg, #ffffff, #f0f0f0);
+      border: 2px solid #d4af37;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2), 0 0 20px rgba(212,175,55,0.3);
+      display: none;
+      flex-direction: column;
+      z-index: 10;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(10px);
+      min-width: 120px;
+    }
+
+    .language-dropdown.show {
+      display: flex;
+      animation: fadeInDown 0.3s ease-out;
+    }
+
+    .language-dropdown button {
+      padding: 0.75rem 1rem;
+      border: none;
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 500;
+      color: #333;
+      position: relative;
+    }
+
+    .language-dropdown button:hover {
+      background: linear-gradient(90deg, #d4af37, #f5c518);
+      color: white;
+      transform: translateX(5px);
+      box-shadow: 0 2px 8px rgba(212,175,55,0.4);
+    }
+
+    .language-dropdown button:active {
+      transform: translateX(5px) scale(0.98);
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .premium-profile-card {
+      background: linear-gradient(145deg, #ffffff, #f8f9fa);
+      border: 2px solid #000000;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      height: 360px;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .premium-profile-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.15), 0 0 20px rgba(212,175,55,0.2);
+      border-color: #d4af37;
+    }
+
+    .premium-profile-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #d4af37, #f5c518);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .premium-profile-card:hover::before {
+      opacity: 1;
+    }
+
+    .profile-details {
+      padding: 1rem;
+      color: #333;
+    }
+
+    .profile-details h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #000;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+
+    .profile-details p {
+      font-size: 0.75rem;
+      margin-bottom: 0.25rem;
+      color: #000;
+      line-height: 1.4;
+    }
+
+    .profile-details p strong {
+      color: #000;
+      font-weight: 600;
+    }
+
+    .requirement-text {
+      white-space: normal;
+      font-style: normal;
+      color: #000;
+      font-size: 0.75rem;
+      margin-bottom: 0.25rem;
+      padding: 0;
+      text-align: left;
+    }
+
+    .profile-buttons {
+      padding: 0 1rem 1rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.25rem;
+    }
+
+    .profile-buttons button {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.75rem;
+      transition: all 0.2s ease;
+      border: none;
+      cursor: pointer;
+    }
+
+    .profile-buttons .see-full-btn {
+      background: linear-gradient(145deg, #d4af37, #f5c518);
+      color: white;
+      box-shadow: 0 2px 8px rgba(212,175,55,0.3);
+    }
+
+    .profile-buttons .see-full-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(212,175,55,0.4);
+    }
+
+    .profile-buttons .share-btn {
+      background: linear-gradient(145deg, #6c757d, #495057);
+      color: white;
+      padding: 0.5rem;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+    }
+
+    .profile-buttons .share-btn:hover {
+      background: linear-gradient(145deg, #495057, #343a40);
+      transform: scale(1.1);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 600px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+    }
+
+    .full-profile-image {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #d4af37;
+      margin: 0 auto 1rem;
+      display: block;
+    }
+
+    .full-profile-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .full-profile-details div {
+      margin-bottom: 0.5rem;
+    }
+
+    .full-profile-details label {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .full-profile-details p {
+      color: #666;
+      margin: 0;
+    }
+
+    /* Motivational Card Styles */
+    .motivational-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .motivational-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.2);
+      border-radius: 16px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-header h2 {
+      color: white;
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+      margin: 0;
+    }
+
+    .language-switch select {
+      background: linear-gradient(145deg, #d4af37, #f5c518);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    .language-switch select:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .language-switch select option {
+      background: white;
+      color: black;
+    }
+
+    .card-body {
+      position: relative;
+      z-index: 1;
+      color: white;
+    }
+
+    .card-body p {
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      line-height: 1.6;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    }
+
+    .card-body p:last-child {
+      margin-bottom: 0;
+      font-weight: bold;
+    }
+
+    .roman-font {
+      font-family: 'Inter', sans-serif;
+    }
+
+    .urdu-font {
+      font-family: 'Noto Sans Arabic', sans-serif;
+      direction: rtl;
+    }
+
+    .english-font {
+      font-family: 'Inter', sans-serif;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.02);
+      }
+    }
+  </style>
+</head>
+<body class="font-sans min-h-screen">
+  <header class="bg-gradient-to-r from-[#D4AF37] via-[#1E90FF] to-[#000080] text-white p-2 md:p-4 shadow-lg">
+    <nav class="flex justify-between items-center">
+      <h1 class="text-lg md:text-xl font-bold glossy-text text-blue-900">Make Easy Marriage</h1>
+      <div class="flex items-center gap-1 md:gap-2">
+        <button id="notificationBtn" class="btn-3d px-1 md:px-2 py-1 md:py-1 rounded transition duration-300 relative text-xs text-black">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-5 md:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5-5V9a6 6 0 10-12 0v3l-5 5h5m0 0v1a3 3 0 006 0v-1m-6 0h6" />
+          </svg>
+          <span id="notificationBadge" class="absolute -top-0.5 -right-0.5 bg-yellow-400 text-black text-xs rounded-full h-2 w-2 md:h-3 md:w-3 flex items-center justify-center hidden">0</span>
+        </button>
+        <a href="index.html" id="homeLink" class="btn-3d px-1 md:px-2 py-0.5 md:py-1 rounded transition duration-300 text-xs md:text-sm text-black">Home</a>
+        <a href="signup.html?return=profiles.html" class="btn-3d px-2 md:px-4 py-1 md:py-2 rounded transition duration-300 text-xs md:text-sm text-black font-bold bg-yellow-500 hover:bg-yellow-600">Sign Up</a>
+        <a href="login.html?return=profiles.html" class="btn-3d px-1 md:px-2 py-0.5 md:py-1 rounded transition duration-300 text-xs md:text-sm text-black">Login</a>
+      </div>
+    </nav>
+    <!-- Notification Panel -->
+    <div id="notificationPanel" class="hidden bg-white bg-opacity-95 p-4 rounded-lg shadow-lg mt-2 max-h-64 overflow-y-auto">
+      <h3 class="text-lg font-semibold mb-2 text-black">Match Notifications</h3>
+      <div id="notificationList" class="space-y-2">
+        <!-- Notifications will be added here -->
+      </div>
+    </div>
+  </header>
+  <main class="p-4 md:p-6">
+    <section class="filter-section mb-4 md:mb-6 bg-gradient-to-r from-[#f5c518] to-[#ffffff] p-3 md:p-4 rounded-lg shadow-lg border border-white/20">
+      <div class="flex flex-col md:flex-row items-start md:items-center mb-4 gap-2">
+      <h2 id="searchFilterTitle" class="text-lg md:text-xl font-semibold glossy-text text-blue-900">Search & Filter</h2>
+      </div>
+      <div class="filter-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 md:gap-4">
+        <select id="filterGender" class="border-2 border-red-600 p-2 rounded bg-white text-black text-sm">
+          <option value="" id="allGendersOption">All Genders</option>
+          <option value="Male" id="maleOption">Male</option>
+          <option value="Female" id="femaleOption">Female</option>
+        </select>
+        <input type="text" id="filterCity" placeholder="Enter City..." class="border-2 border-red-600 p-2 rounded bg-white text-black text-sm">
+        <select id="filterStatus" class="border-2 border-red-600 p-2 rounded bg-white text-black text-sm">
+          <option value="" id="allMaritalStatusOption">All Marital Status</option>
+          <option value="Single" id="singleOption">Single</option>
+          <option value="Divorced" id="divorcedOption">Divorced</option>
+          <option value="Widow" id="widowOption">Widow</option>
+          <option value="Second Marriage" id="secondMarriageOption">Second Marriage</option>
+        </select>
+        <select id="filterCountry" class="border-2 border-red-600 p-2 rounded bg-white text-black text-sm">
+          <option value="">All Countries</option>
+          <option value="Pakistan">Pakistan</option>
+          <option value="Saudi Arabia">Saudi Arabia</option>
+          <option value="UAE">UAE</option>
+          <option value="Turkey">Turkey</option>
+          <option value="Egypt">Egypt</option>
+          <option value="Jordan">Jordan</option>
+          <option value="Morocco">Morocco</option>
+          <option value="Indonesia">Indonesia</option>
+          <option value="Malaysia">Malaysia</option>
+          <option value="Bangladesh">Bangladesh</option>
+          <option value="Iran">Iran</option>
+          <option value="Iraq">Iraq</option>
+          <option value="Syria">Syria</option>
+          <option value="Lebanon">Lebanon</option>
+          <option value="Palestine">Palestine</option>
+          <option value="Kuwait">Kuwait</option>
+          <option value="Qatar">Qatar</option>
+          <option value="Bahrain">Bahrain</option>
+          <option value="Oman">Oman</option>
+          <option value="Yemen">Yemen</option>
+          <option value="Tunisia">Tunisia</option>
+          <option value="Algeria">Algeria</option>
+          <option value="Libya">Libya</option>
+          <option value="Sudan">Sudan</option>
+          <option value="Somalia">Somalia</option>
+          <option value="Djibouti">Djibouti</option>
+          <option value="Comoros">Comoros</option>
+          <option value="Mauritania">Mauritania</option>
+          <option value="Niger">Niger</option>
+          <option value="Chad">Chad</option>
+          <option value="Mali">Mali</option>
+          <option value="Senegal">Senegal</option>
+          <option value="Guinea">Guinea</option>
+          <option value="Sierra Leone">Sierra Leone</option>
+          <option value="Burkina Faso">Burkina Faso</option>
+          <option value="Ivory Coast">Ivory Coast</option>
+          <option value="Ghana">Ghana</option>
+          <option value="Togo">Togo</option>
+          <option value="Benin">Benin</option>
+          <option value="Nigeria">Nigeria</option>
+          <option value="Cameroon">Cameroon</option>
+          <option value="Gabon">Gabon</option>
+          <option value="Congo">Congo</option>
+          <option value="DRC">DRC</option>
+          <option value="Tanzania">Tanzania</option>
+          <option value="Kenya">Kenya</option>
+          <option value="Uganda">Uganda</option>
+          <option value="Ethiopia">Ethiopia</option>
+          <option value="Eritrea">Eritrea</option>
+          <option value="Afghanistan">Afghanistan</option>
+          <option value="Kazakhstan">Kazakhstan</option>
+          <option value="Kyrgyzstan">Kyrgyzstan</option>
+          <option value="Tajikistan">Tajikistan</option>
+          <option value="Turkmenistan">Turkmenistan</option>
+          <option value="Uzbekistan">Uzbekistan</option>
+          <option value="Azerbaijan">Azerbaijan</option>
+          <option value="Other">Other</option>
+        </select>
+        <div class="flex gap-2">
+          <input type="number" placeholder="Min Age" class="border-2 border-red-600 p-2 rounded bg-white text-black w-1/2 text-sm" id="minAge">
+          <input type="number" placeholder="Max Age" class="border-2 border-red-600 p-2 rounded bg-white text-black w-1/2 text-sm" id="maxAge">
+        </div>
+        <button id="applyFilters" class="btn-3d bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700 transition text-sm">Apply Filters</button>
+      </div>
+    </section>
+
+    <div class="flex flex-col gap-4">
+      <!-- Motivational Section -->
+      <div class="motivational-card">
+        <div class="card-header">
+          <h2>🌙 This One Word Can Change Your Life</h2>
+          <div class="language-switch">
+            <select onchange="changeLanguage(this.value)" style="background: linear-gradient(145deg, #d4af37, #f5c518); color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+              <option value="roman">Roman Urdu</option>
+              <option value="urdu">اردو</option>
+              <option value="english">English</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div id="motivationalContent" class="card-body roman-font">
+          <p>
+            Nikah meri sunnat hai, aur jo meri sunnat par amal nahi karta woh mujh se nahi hai.  
+            Hadith Mubarak Hazrat Muhammad ﷺ
+          </p>
+          <p>
+            Nikah zindagi ki behtareen nemat hai jo Allah ne insan ko di hai.  
+            Ise asaan banao aur ise tarjeeh do. Yahaan aap ka intezar hai jo aap ke liye behtareen joda talash kare.
+          </p>
+          <p><b>Neeche tamam candidates ki profiles mojood hain.</b></p>
+        </div>
+      </div>
+
+      <!-- Profile List Section -->
+      <section id="profileList" class="flex-1">
+        <div class="premium-profile-card" id="staticProfile">
+          <div class="profile-details">
+            <p class="font-semibold text-sm text-gray-600">ID: HM-001</p>
+            <h3 class="text-lg font-semibold mb-2">Ahmed Khan</h3>
+            <p class="mb-1"><strong>Gender:</strong> Male</p>
+            <p class="mb-1"><strong>Age:</strong> 28</p>
+            <p class="mb-1"><strong>Location:</strong> Lahore, Pakistan</p>
+            <p class="mb-1"><strong>Sect:</strong> Sunni</p>
+            <p class="mb-1"><strong>Education:</strong> Masters in Computer Science</p>
+            <p class="mb-1"><strong>Occupation:</strong> Software Engineer</p>
+            <p class="mb-2"><strong>Marital Status:</strong> Single</p>
+            <p class="requirement-text"><strong>Requirement:</strong><br><strong>Age: 25-35</strong><br><strong>City: Lahore, Pakistan</strong><br><strong>Marital Status: Single</strong></p>
+          </div>
+          <div class="profile-buttons">
+            <button class="see-full-btn" onclick="openModal()">See Full Profile</button>
+            <button class="share-btn" onclick="navigator.clipboard.writeText(window.location.href + '#HM-001').then(() => alert('Profile link copied to clipboard!'))">🔗</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Modal for Full Profile -->
+    <div id="fullProfileModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Full Profile Details</h2>
+        <img class="full-profile-image" src="https://randomuser.me/api/portraits/men/1.jpg" alt="Ahmed Khan">
+        <div class="full-profile-details">
+          <div>
+            <label>Full Name:</label>
+            <p>Ahmed Khan</p>
+          </div>
+          <div>
+            <label>Gender:</label>
+            <p>Male</p>
+          </div>
+          <div>
+            <label>Age:</label>
+            <p>28</p>
+          </div>
+          <div>
+            <label>Height:</label>
+            <p>5'8"</p>
+          </div>
+          <div>
+            <label>Marital Status:</label>
+            <p>Single</p>
+          </div>
+          <div>
+            <label>Body Type:</label>
+            <p>Athletic</p>
+          </div>
+          <div>
+            <label>Education:</label>
+            <p>Masters in Computer Science</p>
+          </div>
+          <div>
+            <label>Job Title:</label>
+            <p>Software Engineer</p>
+          </div>
+          <div>
+            <label>Monthly Income:</label>
+            <p>150,000 PKR</p>
+          </div>
+          <div>
+            <label>Work Nature:</label>
+            <p>Full-time</p>
+          </div>
+          <div>
+            <label>Religion/Sect:</label>
+            <p>Sunni</p>
+          </div>
+          <div>
+            <label>Mother Tongue:</label>
+            <p>Urdu</p>
+          </div>
+          <div>
+            <label>Caste:</label>
+            <p>Khan</p>
+          </div>
+          <div>
+            <label>Current City/Area:</label>
+            <p>Lahore</p>
+          </div>
+          <div>
+            <label>Permanent Hometown:</label>
+            <p>Lahore</p>
+          </div>
+          <div>
+            <label>Residence Type:</label>
+            <p>Own House</p>
+          </div>
+          <div>
+            <label>Size of House:</label>
+            <p>5 Marla house suitable for nuclear family</p>
+          </div>
+          <div>
+            <label>Total Family Members:</label>
+            <p>5</p>
+          </div>
+          <div>
+            <label>Father's Profession:</label>
+            <p>Businessman</p>
+          </div>
+          <div>
+            <label>Mother's Profession:</label>
+            <p>Housewife</p>
+          </div>
+          <div>
+            <label>Number of Brothers:</label>
+            <p>2</p>
+          </div>
+          <div>
+            <label>Number of Sisters:</label>
+            <p>1</p>
+          </div>
+          <div>
+            <label>Number of Married Brothers:</label>
+            <p>1</p>
+          </div>
+          <div>
+            <label>Number of Married Sisters:</label>
+            <p>0</p>
+          </div>
+          <div>
+            <label>Preferred Age Range:</label>
+            <p>25-35</p>
+          </div>
+          <div>
+            <label>Minimum Height:</label>
+            <p>5'4"</p>
+          </div>
+          <div>
+            <label>Preferred City/Region:</label>
+            <p>Lahore</p>
+          </div>
+          <div>
+            <label>Caste Preference:</label>
+            <p>Sunni</p>
+          </div>
+          <div>
+            <label>Education Preference:</label>
+            <p>Graduate</p>
+          </div>
+          <div>
+            <label>Sect Preference:</label>
+            <p>Sunni</p>
+          </div>
+          <div>
+            <label>Preferred Marital Status:</label>
+            <p>Single</p>
+          </div>
+          <div>
+            <label>Short Description:</label>
+            <p>Hardworking and religious individual seeking a pious partner.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script src="assets/js/profiles.js"></script>
+  <script>
+    // Password validation function
+    function validatePassword(password) {
+      const minLength = 7;
+      const hasLower = /[a-z]/.test(password);
+      const hasUpper = /[A-Z]/.test(password);
+      const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+      return password.length >= minLength && hasLower && hasUpper && hasSpecial;
+    }
+
+    // Check for returning users on page load
+    function checkReturningUser() {
+      const storedUser = JSON.parse(localStorage.getItem('halalMatchUser'));
+      if (storedUser) {
+        // Show welcome back message and dashboard
+        alert('Welcome back, ' + storedUser.name + '! You are already logged in.');
+        showDashboard(storedUser.name);
+      } else {
+        // Show sign-up section for new users
+        showSignUp();
+      }
+    }
+
+    // Navigation functions
+    function showSignUp() {
+      // Agreement is shown by default
+      document.getElementById('dashboardSection').classList.add('hidden');
+    }
+
+    function showDashboard(userName) {
+      document.getElementById('dashboardSection').classList.remove('hidden');
+      document.getElementById('dashboardSection').querySelector('h2').textContent = `Welcome to Your Dashboard, ${userName}`;
+    }
+
+    // Sign Up Form Handler
+    document.getElementById('signupForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = document.getElementById('signupName').value.trim();
+      const email = document.getElementById('signupEmail').value.trim();
+      const password = document.getElementById('signupPassword').value;
+      const confirmPassword = document.getElementById('signupConfirmPassword').value;
+
+      if (!name || !email || !password || !confirmPassword) {
+        alert('Please fill in all fields.');
+        return;
+      }
+
+      // Validate email: must be Gmail
+      const emailDomain = email.split('@')[1];
+      if (!emailDomain || !emailDomain.toLowerCase().includes('gmail.com')) {
+        alert('Please sign up using a Gmail account. For iPhone users, use Apple ID sign-in.');
+        return;
+      }
+
+      // Block common temp email domains
+      const tempDomains = ['10minutemail.com', 'temp-mail.org', 'guerrillamail.com', 'mailinator.com', 'tempail.com', 'throwaway.email', 'yopmail.com', 'maildrop.cc', 'tempinbox.com', 'dispostable.com'];
+      if (tempDomains.some(domain => emailDomain.toLowerCase().includes(domain))) {
+        alert('Temporary emails are not allowed. Please use a valid Gmail account.');
+        return;
+      }
+
+      if (!validatePassword(password)) {
+        alert('Password must be at least 7 characters long and contain at least one lowercase letter, one uppercase letter, and one special character.');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        alert('Passwords do not match.');
+        return;
+      }
+
+      // Store user data in localStorage
+      const user = { name, email, password };
+      localStorage.setItem('halalMatchUser', JSON.stringify(user));
+
+      alert('Sign up successful! Welcome to HalalMatch, ' + name + '.');
+      document.getElementById('signupForm').reset();
+      showDashboard(name);
+    });
+
+    // Login Form Handler
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      if (!email || !password) {
+        alert('Please enter email and password.');
+        return;
+      }
+
+      const storedUser = JSON.parse(localStorage.getItem('halalMatchUser'));
+      if (storedUser && storedUser.email === email && storedUser.password === password) {
+        alert('Login successful! Welcome back, ' + storedUser.name + '.');
+        showDashboard(storedUser.name);
+      } else {
+        alert('Invalid email or password.');
+      }
+    });
+
+    // Event listeners for new auth buttons
+    document.getElementById('signUpLoginBtn').addEventListener('click', function() {
+      document.getElementById('authOptions').classList.remove('hidden');
+    });
+
+    document.getElementById('showSignUpForm').addEventListener('click', function() {
+      document.getElementById('signupForm').classList.remove('hidden');
+      document.getElementById('loginForm').classList.add('hidden');
+    });
+
+    document.getElementById('showLoginForm').addEventListener('click', function() {
+      document.getElementById('loginForm').classList.remove('hidden');
+      document.getElementById('signupForm').classList.add('hidden');
+    });
+
+    // Logout Handler
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+      showSignUp();
+    });
+
+    // Social Button Event Listeners
+    document.getElementById('googleSignUp').addEventListener('click', function() {
+      alert('Sign up with Google feature coming soon.');
+    });
+
+    document.getElementById('appleSignUp').addEventListener('click', function() {
+      alert('Sign in with Apple feature coming soon.');
+    });
+
+    // Hide Apple button if not iPhone
+    if (!navigator.userAgent.match(/iPhone/i)) {
+      document.getElementById('appleSignUp').style.display = 'none';
+    }
+
+    // Profile Display Generation
+    let profiles = []; // Store profiles for AI matching
+    let maleProfiles = [];
+    let femaleProfiles = [];
+
+    const boysImages = [
+      'https://randomuser.me/api/portraits/men/1.jpg',
+      'https://randomuser.me/api/portraits/men/2.jpg',
+      'https://randomuser.me/api/portraits/men/3.jpg',
+      'https://randomuser.me/api/portraits/men/4.jpg',
+      'https://randomuser.me/api/portraits/men/5.jpg',
+    ];
+
+    const girlsPlaceholder = 'https://i.postimg.cc/3x3QzSGq/annie-placeholder.png'; // Premium look placeholder
+
+    const sampleNames = ['Ahmed', 'Bilal', 'Sara', 'Ayesha', 'Omar', 'Zainab', 'Ali', 'Fatima', 'Hassan', 'Maryam'];
+    const sampleCities = ['Karachi', 'Lahore', 'Islamabad', 'Multan', 'Peshawar', 'Quetta', 'Faisalabad'];
+    const sampleStatus = ['Single', 'Divorced', 'Widow', 'Second Marriage'];
+    const sampleCountries = ['Pakistan', 'Saudi Arabia', 'UAE', 'Turkey', 'Egypt'];
+    const sampleCaste = ['Rajput', 'Syed', 'Khan'];
+    const sampleEducation = ['Master’s', 'MBA', 'BS Hons', 'Bachelor'];
+    const sampleJob = ['Multinational Manager', 'Teacher', 'Not Working', 'Engineer'];
+    const sampleIncome = ['150000+', '100000-150000', '50000-100000'];
+    const sampleFamilyBackground = ['Father Govt Officer', 'Father Businessman', 'Father Retired'];
+
+    function getRandomItem(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function generateProfiles() {
+      const profileList = document.getElementById('profileList');
+      profileList.innerHTML = '';
+      profileList.className = 'flex-1 grid grid-cols-2 md:grid-cols-4 gap-4';
+      profiles = []; // Reset profiles array
+      maleProfiles = [];
+      femaleProfiles = [];
+
+      // Generate 4 profiles with random data
+      for (let i = 0; i < 4; i++) {
+        const gender = getRandomItem(['Male', 'Female']);
+        const city = getRandomItem(sampleCities);
+        const country = getRandomItem(sampleCountries);
+        const profile = {
+          id: 'HM-00' + (i + 1),
+          name: getRandomItem(sampleNames),
+          gender: gender,
+          age: Math.floor(Math.random() * 20) + 20, // 20-40
+          location: city + ', ' + country,
+          sect: 'Sunni',
+          education: getRandomItem(sampleEducation),
+          occupation: getRandomItem(sampleJob),
+          maritalStatus: getRandomItem(sampleStatus),
+          profileId: 'HM-00' + (i + 1),
+          isMale: gender === 'Male',
+          requirement: 'Looking for a partner with strong family values and religious commitment.'
+        };
+
+        profiles.push(profile);
+        if (profile.isMale) maleProfiles.push(profile); else femaleProfiles.push(profile);
+
+        const profileCard = document.createElement('div');
+        profileCard.className = 'premium-profile-card';
+
+        const detailsDiv = document.createElement('div');
+        detailsDiv.className = 'profile-details';
+
+        const idEl = document.createElement('p');
+        idEl.className = 'font-semibold text-sm text-gray-600';
+        idEl.textContent = 'ID: ' + profile.id;
+
+        const nameEl = document.createElement('h3');
+        nameEl.className = 'text-lg font-semibold mb-2';
+        nameEl.textContent = profile.name;
+
+        const genderEl = document.createElement('p');
+        genderEl.className = 'mb-1';
+        genderEl.innerHTML = '<strong>Gender:</strong> ' + profile.gender;
+
+        const ageEl = document.createElement('p');
+        ageEl.className = 'mb-1';
+        ageEl.innerHTML = '<strong>Age:</strong> ' + profile.age;
+
+        const locationEl = document.createElement('p');
+        locationEl.className = 'mb-1';
+        locationEl.innerHTML = '<strong>Location:</strong> ' + profile.location;
+
+        const sectEl = document.createElement('p');
+        sectEl.className = 'mb-1';
+        sectEl.innerHTML = '<strong>Sect:</strong> ' + profile.sect;
+
+        const educationEl = document.createElement('p');
+        educationEl.className = 'mb-1';
+        educationEl.innerHTML = '<strong>Education:</strong> ' + profile.education;
+
+        const occupationEl = document.createElement('p');
+        occupationEl.className = 'mb-1';
+        occupationEl.innerHTML = '<strong>Occupation:</strong> ' + profile.occupation;
+
+        const statusEl = document.createElement('p');
+        statusEl.className = 'mb-2';
+        statusEl.innerHTML = '<strong>Marital Status:</strong> ' + profile.maritalStatus;
+
+        detailsDiv.appendChild(idEl);
+        detailsDiv.appendChild(nameEl);
+        detailsDiv.appendChild(genderEl);
+        detailsDiv.appendChild(ageEl);
+        detailsDiv.appendChild(locationEl);
+        detailsDiv.appendChild(sectEl);
+        detailsDiv.appendChild(educationEl);
+        detailsDiv.appendChild(occupationEl);
+        detailsDiv.appendChild(statusEl);
+
+        // Add requirement paragraph inside detailsDiv with marital status, age, and city in three lines
+        const requirementEl = document.createElement('p');
+        requirementEl.className = 'requirement-text';
+        requirementEl.innerHTML = `<strong>Requirement:</strong><br><strong>Age: ${profile.age - 3}-${profile.age + 7}</strong><br><strong>City: ${city}, ${country}</strong><br><strong>Marital Status: ${profile.maritalStatus}</strong>`;
+
+        detailsDiv.appendChild(requirementEl);
+
+        const buttonsDiv = document.createElement('div');
+        buttonsDiv.className = 'profile-buttons';
+
+        const seeFullBtn = document.createElement('button');
+        seeFullBtn.className = 'see-full-btn';
+        seeFullBtn.textContent = 'See Full Profile';
+        seeFullBtn.onclick = openModal;
+
+        const shareBtn = document.createElement('button');
+        shareBtn.className = 'share-btn';
+        shareBtn.innerHTML = '🔗';
+        shareBtn.onclick = function() {
+          const url = window.location.href + '#' + profile.profileId;
+          navigator.clipboard.writeText(url).then(function() {
+            alert('Profile link copied to clipboard!');
+          }, function(err) {
+            console.error('Could not copy text: ', err);
+          });
+        };
+
+        buttonsDiv.appendChild(seeFullBtn);
+        buttonsDiv.appendChild(shareBtn);
+
+        profileCard.appendChild(detailsDiv);
+        profileCard.appendChild(buttonsDiv);
+
+        profileList.appendChild(profileCard);
+      }
+    }
+
+    generateProfiles();
+
+    // AI Auto-Match Bot Notification System
+    const notificationBtn = document.getElementById('notificationBtn');
+    const notificationPanel = document.getElementById('notificationPanel');
+    const notificationList = document.getElementById('notificationList');
+    const notificationBadge = document.getElementById('notificationBadge');
+
+    let notificationCount = 0;
+
+    function addNotification(userName, userId, matchName, matchId, percentage) {
+      const notification = document.createElement('div');
+      notification.className = 'bg-yellow-100 p-2 rounded border-l-4 border-red-600';
+      notification.innerHTML = `<p class="text-sm text-black">Dear User, your profile (Profile Name: ${userName}, Profile ID: ${userId}) is ${percentage}% matching with another profile (Profile Name: ${matchName}, Profile ID: ${matchId}). Please review this potential match in your dashboard.</p>`;
+      notificationList.appendChild(notification);
+      notificationCount++;
+      updateBadge();
+    }
+
+    function updateBadge() {
+      if (notificationCount > 0) {
+        notificationBadge.textContent = notificationCount;
+        notificationBadge.classList.remove('hidden');
+      } else {
+        notificationBadge.classList.add('hidden');
+      }
+    }
+
+    notificationBtn.addEventListener('click', function() {
+      notificationPanel.classList.toggle('hidden');
+    });
+
+    // Simulate AI matches based on family requirements
+    function simulateMatches() {
+      let matchCount = 0;
+      const maxMatches = 1; // Weekly limit: 1 match maximum
+
+      // Shuffle male and female profiles
+      const shuffledMales = maleProfiles.sort(() => 0.5 - Math.random());
+      const shuffledFemales = femaleProfiles.sort(() => 0.5 - Math.random());
+
+      for (const male of shuffledMales) {
+        if (matchCount >= maxMatches) break;
+        for (const female of shuffledFemales) {
+          if (matchCount >= maxMatches) break;
+
+          // Calculate match percentage based on Age, City, Caste, Education, Job/Business
+          let matchScore = 0;
+          if (Math.abs(male.age - female.age) <= 5) matchScore += 20;
+          if (male.city === female.city) matchScore += 20;
+          if (male.caste === female.caste) matchScore += 20;
+          if (male.education === female.education) matchScore += 20;
+          if (male.job === female.job) matchScore += 20;
+
+          // Only notify if match is 90-99%
+          if (matchScore >= 90 && matchScore <= 99) {
+            addNotification(male.name, male.profileId, female.name, female.profileId, matchScore);
+            matchCount++;
+            break; // Move to next male after finding a match
+          }
+        }
+      }
+    }
+
+    simulateMatches();
+
+
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', function() {
+      checkReturningUser();
+
+      // Enhanced sign-up flow with better validation
+      function enhanceSignUpFlow() {
+        const signupForm = document.getElementById('signupForm');
+        const inputs = signupForm.querySelectorAll('input');
+
+        // Real-time validation feedback
+        inputs.forEach(input => {
+          input.addEventListener('blur', function() {
+            validateField(this);
+          });
+        });
+
+        function validateField(field) {
+          const value = field.value.trim();
+          const fieldName = field.previousElementSibling.textContent.replace(':', '');
+
+          // Remove existing error messages
+          const existingError = field.parentNode.querySelector('.error-message');
+          if (existingError) {
+            existingError.remove();
+          }
+
+          let isValid = true;
+          let errorMessage = '';
+
+          switch(field.id) {
+            case 'signupName':
+              if (value.length < 2) {
+                isValid = false;
+                errorMessage = 'Name must be at least 2 characters long.';
+              }
+              break;
+            case 'signupEmail':
+              const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+              if (!emailRegex.test(value)) {
+                isValid = false;
+                errorMessage = 'Please enter a valid email address.';
+              }
+              break;
+            case 'signupPassword':
+              if (!validatePassword(value)) {
+                isValid = false;
+                errorMessage = 'Password must be at least 7 characters with uppercase, lowercase, and special character.';
+              }
+              break;
+            case 'signupConfirmPassword':
+              const password = document.getElementById('signupPassword').value;
+              if (value !== password) {
+                isValid = false;
+                errorMessage = 'Passwords do not match.';
+              }
+              break;
+          }
+
+          if (!isValid) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message text-red-400 text-xs mt-1';
+            errorDiv.textContent = errorMessage;
+            field.parentNode.appendChild(errorDiv);
+            field.classList.add('border-red-500');
+          } else {
+            field.classList.remove('border-red-500');
+            field.classList.add('border-green-500');
+          }
+
+          return isValid;
+        }
+      }
+
+      // Call the enhancement function
+      enhanceSignUpFlow();
+    });
+
+    // Language translations
+    const translations = {
+      urdu: {
+        hadith: '"نکاح میری سنت ہے، اور جو میری سنت پر عمل نہیں کرتا وہ مجھ سے نہیں ہے۔" - حدیث مبارک حضرت محمد صلی اللہ علیہ والہ وسلم',
+        motivational: 'نکاح زندگی کی بہترین نعمت ہے جو اللہ نے انسان کو دی ہے۔ اسے آسان بنائیں اور اسے ترجیح دیں۔ یہاں آپ کا انتظار ہے جو آپ کے لیے بہترین جوڑا تلاش کرے۔',
+        profiles: 'نیچے تمام کینڈیڈیٹس کی پروفائلز موجود ہیں'
+      },
+      roman: {
+        hadith: '"Nikah meri sunnat hai, aur jo meri sunnat par amal nahi karta woh mujh se nahi hai." - Hadith Mubarak Hazrat Muhammad Sallallahu Alaihi Wasallam',
+        motivational: 'Nikah zindagi ki behtareen nemat hai jo Allah ne insan ko di hai. Ise asaan banao aur ise tarjeeh do. Yahaan aap ka intezar hai jo aap ke liye behtareen joda talash kare.',
+        profiles: 'Neeche tamam candidates ki profiles mojood hain'
+      },
+      english: {
+        hadith: '"Nikah is my Sunnah, and whoever does not follow my Sunnah is not from me." - Hadith Mubarak Hazrat Muhammad Sallallahu Alaihi Wasallam',
+        motivational: 'Nikah is the best blessing of life given by Allah to humans. Make it easy and prioritize it. Here we are waiting for you to find the best match for you.',
+        profiles: 'All candidates\' profiles are available below'
+      }
+    };
+
+
+
+    // Modal functions
+    function openModal() {
+      document.getElementById('fullProfileModal').style.display = 'block';
+    }
+
+    function closeModal() {
+      document.getElementById('fullProfileModal').style.display = 'none';
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const modal = document.getElementById('fullProfileModal');
+      if (event.target == modal) {
+        modal.style.display = 'none';
+      }
+    }
+
+    function changeLanguage(lang) {
+      const content = document.getElementById("motivationalContent");
+
+      if (lang === "roman") {
+        content.className = "card-body roman-font";
+        content.innerHTML = `
+          <p>Nikah meri sunnat hai, aur jo meri sunnat par amal nahi karta woh mujh se nahi hai.
+          Hadith Mubarak Hazrat Muhammad ﷺ</p>
+          <p>Nikah zindagi ki behtareen nemat hai jo Allah ne insan ko di hai.
+          Ise asaan banao aur ise tarjeeh do. Yahaan aap ka intezar hai jo aap ke liye behtareen joda talash kare.</p>
+          <p><b>Neeche tamam candidates ki profiles mojood hain.</b></p>
+        `;
+      } else if (lang === "urdu") {
+        content.className = "card-body urdu-font";
+        content.innerHTML = `
+          <p>نکاح میری سنت ہے، اور جو میری سنت پر عمل نہیں کرتا وہ مجھ سے نہیں ہے۔
+          حدیث مبارک حضرت محمد ﷺ</p>
+          <p>نکاح زندگی کی بہترین نعمت ہے جو اللہ نے انسان کو دی ہے۔
+          اسے آسان بناؤ اور اسے ترجیح دو۔ یہاں آپ کا انتظار ہے جو آپ کے لیے بہترین جوڑا تلاش کرے۔</p>
+          <p><b>نیچے تمام امیدواروں کی پروفائلز موجود ہیں۔</b></p>
+        `;
+      } else if (lang === "english") {
+        content.className = "card-body english-font";
+        content.innerHTML = `
+          <p>Nikah is my Sunnah, and whoever does not follow my Sunnah is not from me.
+          Hadith of Prophet Muhammad ﷺ</p>
+          <p>Nikah is the greatest blessing that Allah has given to mankind.
+          Make it easy and give it importance. Here, the best match is waiting for you.</p>
+          <p><b>Below are all the candidate profiles.</b></p>
+        `;
+      }
+    }
+  </script>
+</body>
+</html>

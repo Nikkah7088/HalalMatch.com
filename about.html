@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About - HalalMatch</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="assets/css/premium-background.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+
+    html {
+      background:
+        linear-gradient(135deg, rgba(10,12,16,0.8) 0%, rgba(26,28,32,0.9) 50%, rgba(212,175,55,0.1) 100%),
+        url('https://i.postimg.cc/3wX6rjvQ/Untitled-design2.png') center/cover fixed no-repeat;
+      backdrop-filter: blur(1px);
+      min-height: 100vh;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      position: relative;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      color: #000000;
+      text-shadow: 2px 2px 4px #ffffff;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+        repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 15px,
+          rgba(212,175,55,0.05) 15px,
+          rgba(212,175,55,0.05) 30px
+        ),
+        radial-gradient(circle at 20% 20%, rgba(212,175,55,0.08) 0%, transparent 30%),
+        radial-gradient(circle at 80% 80%, rgba(255,255,255,0.06) 0%, transparent 30%),
+        linear-gradient(45deg, rgba(10,12,16,0.1) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+    .bg-scrim {
+      background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 50%, #d4af37 100%);
+      border: 1px solid rgba(212,175,55,0.3);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-radius: 12px;
+    }
+    .btn-3d {
+      transform: translateY(0);
+      transition: transform 160ms ease, box-shadow 160ms ease;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+      text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+    }
+    .btn-3d:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 26px rgba(0,0,0,0.45);
+    }
+    /* Remove 3D animation from cards */
+    .card-3d {
+      transform: none !important;
+      transition: none !important;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      background: linear-gradient(135deg, #ffffff, #f9f9f9);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .card-3d:hover {
+      transform: none !important;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+    .glossy-text {
+      text-shadow: 0 0 10px rgba(255,255,255,0.5);
+    }
+    .gold { color: #D4AF37; }
+    .border-gold { border-color: #D4AF37; }
+    /* Responsive */
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem;
+      }
+      main {
+        padding-top: 3rem;
+      }
+      .mission-container, .about-container {
+        padding: 1rem;
+      }
+      .card-3d {
+        padding: 1rem;
+      }
+      h2 {
+        font-size: 1.5rem;
+      }
+      .grid.md\:grid-cols-2 {
+        grid-template-columns: 1fr;
+      }
+      .grid.grid-cols-3 {
+        grid-template-columns: 1fr;
+      }
+      .flex.justify-center.space-x-4 {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      img.w-64.h-64 {
+        width: 12rem;
+        height: 12rem;
+      }
+      .text-3xl {
+        font-size: 1.5rem;
+      }
+      .text-2xl {
+        font-size: 1.25rem;
+      }
+      .text-xl {
+        font-size: 1.125rem;
+      }
+    }
+  </style>
+</head>
+<body class="font-sans min-h-screen">
+  <header class="bg-scrim text-black p-4 shadow-lg relative w-full z-10" style="color: #000000; text-shadow: 2px 2px 4px #ffffff;">
+    <nav class="flex justify-between items-center max-w-6xl mx-auto px-4">
+      <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 border border-yellow-400 rounded-lg px-4 py-2 shadow-lg text-white font-semibold btn-3d text-sm" style="font-family: 'AlQalam Shakir', serif; font-size: 0.75rem; padding: 0.5rem 1rem;">
+        ﷺ Did you recite Durood today?
+      </div>
+      <a href="index.html" class="bg-gradient-to-r from-green-500 to-green-600 border border-green-400 rounded-lg px-4 py-2 shadow-lg text-white font-semibold btn-3d text-sm" style="font-family: 'AlQalam Shakir', serif; font-size: 0.75rem; padding: 0.5rem 1rem;">
+        🏠 Home Page
+      </a>
+    </nav>
+  </header>
+
+  <main class="pt-8 p-4 md:p-6">
+    <div class="max-w-6xl mx-auto space-y-8">
+      <!-- Mission Section -->
+      <div class="p-6 rounded-lg shadow-xl card-3d mission-container" style="background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 50%, #d4af37 100%); border: 1px solid rgba(212,175,55,0.3);">
+        <h2 class="text-3xl font-bold mb-4 text-black glossy-text" style="color: #000000; text-shadow: 2px 2px 4px #ffffff;">Our Mission</h2>
+        <div class="mission-card" style="position: relative; padding: 1rem; background: rgba(255,255,255,0.9); border-radius: 10px;">
+          <div class="language-selector" style="position: absolute; top: 10px; right: 10px;">
+            <select id="language-select" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; border-radius: 5px; border: 1px solid #ccc;">
+              <option value="english">English</option>
+              <option value="urdu">Urdu</option>
+              <option value="roman">Roman Urdu</option>
+            </select>
+          </div>
+          <div id="mission-content" class="text-black" style="color: #000000; text-shadow: 1px 1px 3px #ffffff; line-height: 1.6;">
+            <div id="short-content">
+              <p>At HalalMatch.com, our mission is to provide a premium Islamic matchmaking platform that connects Muslim families worldwide with dignity, respect, and adherence to Islamic values. We are committed to facilitating blessed marriages by ensuring privacy, modesty, and family involvement in the matchmaking process.</p>
+              <p>Our purpose is to promote halal relationships and support the Muslim community in finding compatible life partners. We believe in creating a safe, respectful space for matrimonial connections that prioritizes spiritual and cultural compatibility over material gains, fostering stronger Muslim families and communities.</p>
+              <p>Why did we publish this website? In today's world, many matrimonial platforms focus on commercial interests, often compromising on Islamic principles and family values. HalalMatch.com was created to address this gap, offering a free, trustworthy service that aligns with Sharia guidelines and encourages meaningful, long-lasting unions for the sake of Allah.</p>
+            </div>
+            <div id="full-content" style="display: none;">
+              <p>Make Nikah common, end sin – this is our mission.</p>
+              <p>Halal Match.com is not just a website; it is a vision and a mission for the entire Muslim Ummah. The purpose of this platform is to unite Muslims, make the process of marriage simple, and eliminate unnecessary burdens, expenses, and customs that have unfortunately turned marriage into a business.</p>
+              <p>In today's society, one of the biggest challenges is that marriages are often tied to heavy financial demands. In Pakistan alone, families are asked to pay between 20,000 and 50,000 PKR just to arrange a proposal. From registration to engagement to marriage, every step has been commercialized. In countries like the UK, Canada, and the USA, these fees can reach hundreds of thousands of rupees per year. For families with limited means, this makes it extremely difficult to marry off their daughters and sisters with dignity.</p>
+              <p>Halal Match.com was created to change this situation. This platform is not about profit or business, but about purpose. Our mission is to simplify marriage, make it affordable, and revive the Sunnah of Nikah in its true spirit. We want families to focus on character, faith, and compatibility — not on money, status, or unnecessary demands.</p>
+              <p>This mission began with me personally. I am not from a wealthy background, nor am I a businessman or landlord. I am a young, unemployed man from a simple family, but Allah Almighty has chosen me for this work. I pray that this effort becomes a source of forgiveness for my late father, Noor Muhammad Mujahid, and a continuous charity (sadaqah jariyah) for him, as well as a means of mercy for me in the future.</p>
+              <p>I humbly request you all to support this mission — not only by remembering us in your prayers, but also by spreading this message. Share this platform with others, encourage simple marriages, and reduce unnecessary demands. Together, we can make Nikah easy, protect our youth, and build stronger Muslim families across the world.</p>
+              <p>Sincerely,<br>Ahmed Hassan Noor<br>Professional Service Provider — Halal Match.com<br>Rahim Yar Khan</p>
+            </div>
+          </div>
+          <button id="see-more-btn" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #D4AF37; color: #000000; border: none; border-radius: 5px; cursor: pointer;">See More</button>
+        </div>
+      </div>
+
+      <!-- About Section -->
+      <div class="p-6 rounded-lg shadow-xl card-3d about-container" style="background: linear-gradient(135deg, #f0f8ff 0%, #e6f3ff 50%, #d4af37 100%); border: 1px solid rgba(212,175,55,0.3);">
+        <div class="grid md:grid-cols-2 gap-6 items-center">
+          <div>
+            <h2 class="text-3xl font-bold mb-4 text-black glossy-text" style="color: #000000; text-shadow: 2px 2px 4px #ffffff;">Meet Ahmed Hassan Noor</h2>
+            <div id="about-content" class="text-black" style="color: #000000; text-shadow: 1px 1px 3px #ffffff; line-height: 1.6;">
+              <div id="about-short-content">
+                <p>My Name Is Ahmed Hassan Noor, I Belong To Rahim Yar Khan, Punjab, Pakistan. Age 24 Years Old By Caste Mahar. In The Name Of Allah, The Most Gracious, The Most Merciful. I Am Not Employed In Any Worldly Profession, As I Dedicate My Life To Serving Our Community Of 700 Members Through This Blessed Platform.</p>
+              </div>
+              <div id="about-full-content" style="display: none;">
+                <p>Ahmed Hassan Noor From Rahim Yar Khan, PUNJAB, Pakistan AGE 24 Years Old BY CASTE MAHAR "In the name of Allah, the Most Gracious, the Most Merciful. I am not employed in any worldly profession, as I dedicate my life to serving our community of 700 members through this blessed platform." This website is created to pay tribute to all the deceased, especially my father and my relatives. My respected father's name is Faqeer Noor Muhammad Mujahid, the late. May Allah Almighty grant this good deed as a continuous charity. May Allah Almighty forgive all the dear ones, relatives and Muslims who have passed away from this world. May Allah Almighty forgive them and grant them the intercession of the Holy Prophet (peace and blessings of Allah be upon him). Amen. Then Amen, O Lord of the Worlds.</p>
+                <p>Admin Message: By the grace of Allah, I established this platform to connect righteous Muslims seeking pure relationships according to Islamic principles. This service is my humble contribution to our Ummah.</p>
+                <p>Anime Recommendation: 'Mushoku Tensei: Jobless Reincarnation' - A story of redemption and growth, inspiring us to improve ourselves and our communities.</p>
+              </div>
+            </div>
+            <button id="about-see-more-btn" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #D4AF37; color: #000000; border: none; border-radius: 5px; cursor: pointer;">See More</button>
+          </div>
+          <div class="text-center">
+            <img src="https://i.postimg.cc/FsY30NRt/IMG-20250219-WA0003.jpg" alt="Ahmed Hassan Noor" class="w-64 h-64 object-cover rounded-lg mx-auto shadow-lg">
+          </div>
+        </div>
+      </div>
+
+      <!-- Qari Nadeem Section -->
+      <div class="p-6 rounded-lg shadow-xl card-3d" style="background: linear-gradient(135deg, #fff8dc 0%, #f5f5dc 50%, #d4af37 100%); border: 1px solid rgba(212,175,55,0.3);">
+        <h2 class="text-3xl font-bold mb-4 text-black glossy-text" style="color: #000000; text-shadow: 2px 2px 4px #ffffff;">Qari Nadeem Ahmed Sahib</h2>
+        <p class="text-black mb-4" style="color: #000000; text-shadow: 1px 1px 3px #ffffff;">
+          Qari Nadeem Ahmed Sahib, a very noble and good-natured reciter from Rawalpindi, thanks to whom I joined this work and have reached this point today. I pray that God Almighty will grant him a healthy life and good and blessed life. Please remember him in your prayers.
+        </p>
+      </div>
+
+      <!-- Success Stories -->
+      <div class="p-6 rounded-lg shadow-xl card-3d" style="background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 50%, #d4af37 100%); border: 1px solid rgba(212,175,55,0.3);">
+        <h2 class="text-3xl font-bold mb-6 text-black glossy-text text-center" style="color: #000000; text-shadow: 2px 2px 4px #ffffff;">Success Stories</h2>
+        <div id="success-stories-container">
+          <!-- Stories will be loaded dynamically -->
+        </div>
+      <div class="text-center mt-6">
+        <button id="see-more-stories-btn" class="btn-3d bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black px-6 py-3 rounded-lg font-semibold transition duration-300">See More</button>
+      </div>
+      </div>
+
+      <!-- Share Your Story -->
+      <div class="p-6 rounded-lg shadow-xl card-3d text-center" style="background: linear-gradient(135deg, #f5f5dc 0%, #e8e8dc 50%, #d4af37 100%); border: 1px solid rgba(212,175,55,0.3);">
+        <p class="text-xl font-semibold mb-4 text-black" style="color: #000000; text-shadow: 1px 1px 3px #ffffff;">Share your story with us!</p>
+        <form id="story-form">
+          <textarea id="story-text" rows="4" class="w-full p-4 border border-gray-300 rounded-lg mb-4" placeholder="Share your 2-line success story..." required></textarea>
+          <button type="submit" class="btn-3d bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition duration-300">Submit</button>
+        </form>
+      </div>
+
+      <!-- Community & Contact -->
+      <div class="p-6 rounded-lg shadow-xl card-3d" style="background: linear-gradient(135deg, #e6f3ff 0%, #d4e8ff 50%, #d4af37 100%); border: 1px solid rgba(212,175,55,0.3);">
+        <h2 class="text-3xl font-bold mb-6 text-black glossy-text text-center" style="color: #000000; text-shadow: 2px 2px 4px #ffffff;">Community</h2>
+        <div class="text-center">
+          <h3 class="text-xl font-semibold mb-4 gold">Community Success</h3>
+          <div class="grid grid-cols-3 gap-4">
+            <div class="bg-red-50 p-4 rounded-lg">
+              <div class="text-2xl font-bold gold mb-2">700+</div>
+              <div class="text-gray-700">Active Members</div>
+            </div>
+            <div class="bg-red-50 p-4 rounded-lg">
+              <div class="text-2xl font-bold gold mb-2">50+</div>
+              <div class="text-gray-700">Successful Matches</div>
+            </div>
+            <div class="bg-red-50 p-4 rounded-lg">
+              <div class="text-2xl font-bold gold mb-2">24/7</div>
+              <div class="text-gray-700">Community Support</div>
+            </div>
+          </div>
+          <div class="mt-6 flex justify-center space-x-4">
+            <a href="https://chat.whatsapp.com/LGydEjHgRd6BnTp2J0f1C9" class="btn-3d bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition duration-300">📱 Join WhatsApp Community</a>
+            <a href="mailto:halalnikkahmatch@gmail.com" class="btn-3d bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition duration-300">📧 Send Email</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const missionData = {
+      english: {
+        short: `<p>Make Nikah common, end sin – this is our mission.</p>
+                <p>Halal Match.com is not just a website; it is a vision and a mission for the entire Muslim Ummah. The purpose of this platform is to unite Muslims, make the process of marriage simple, and eliminate unnecessary burdens, expenses, and customs that have unfortunately turned marriage into a business.</p>`,
+        full: `<p>Make Nikah common, end sin – this is our mission.</p>
+               <p>Halal Match.com is not just a website; it is a vision and a mission for the entire Muslim Ummah. The purpose of this platform is to unite Muslims, make the process of marriage simple, and eliminate unnecessary burdens, expenses, and customs that have unfortunately turned marriage into a business.</p>
+               <p>In today's society, one of the biggest challenges is that marriages are often tied to heavy financial demands. In Pakistan alone, families are asked to pay between 20,000 and 50,000 PKR just to arrange a proposal. From registration to engagement to marriage, every step has been commercialized. In countries like the UK, Canada, and the USA, these fees can reach hundreds of thousands of rupees per year. For families with limited means, this makes it extremely difficult to marry off their daughters and sisters with dignity.</p>
+               <p>Halal Match.com was created to change this situation. This platform is not about profit or business, but about purpose. Our mission is to simplify marriage, make it affordable, and revive the Sunnah of Nikah in its true spirit. We want families to focus on character, faith, and compatibility — not on money, status, or unnecessary demands.</p>
+               <p>This mission began with me personally. I am not from a wealthy background, nor am I a businessman or landlord. I am a young, unemployed man from a simple family, but Allah Almighty has chosen me for this work. I pray that this effort becomes a source of forgiveness for my late father, Noor Muhammad Mujahid, and a continuous charity (sadaqah jariyah) for him, as well as a means of mercy for me in the future.</p>
+               <p>I humbly request you all to support this mission — not only by remembering us in your prayers, but also by spreading this message. Share this platform with others, encourage simple marriages, and reduce unnecessary demands. Together, we can make Nikah easy, protect our youth, and build stronger Muslim families across the world.</p>
+               <p>Sincerely,<br>Ahmed Hassan Noor<br>Professional Service Provider — Halal Match.com<br>Rahim Yar Khan</p>`
+      },
+      urdu: {
+        short: `<p>نکاح کو عام کرو، گناہ کو ختم کرو – یہی ہمارا مقصد ہے۔</p>
+                <p>Halal Match.com صرف ایک ویب سائٹ نہیں بلکہ ایک وژن اور مشن ہے جس کا مقصد امتِ مسلمہ کو قریب لانا، نکاح کو آسان بنانا اور ان غیر ضروری اخراجات اور رسم و رواج کو ختم کرنا ہے جنہوں نے نکاح کو ایک کاروبار بنا دیا ہے۔</p>`,
+        full: `<p>نکاح کو عام کرو، گناہ کو ختم کرو – یہی ہمارا مقصد ہے۔</p>
+               <p>Halal Match.com صرف ایک ویب سائٹ نہیں بلکہ ایک وژن اور مشن ہے جس کا مقصد امتِ مسلمہ کو قریب لانا، نکاح کو آسان بنانا اور ان غیر ضروری اخراجات اور رسم و رواج کو ختم کرنا ہے جنہوں نے نکاح کو ایک کاروبار بنا دیا ہے۔</p>
+               <p>آج ہمارے معاشرے میں سب سے بڑی رکاوٹ یہ ہے کہ رشتے بھاری مالی تقاضوں کے ساتھ جُڑ گئے ہیں۔ پاکستان میں ایک رشتہ طے کرنے کے لیے 20 ہزار سے 50 ہزار روپے تک فیس لی جاتی ہے۔ رجسٹریشن سے لے کر منگنی اور نکاح تک ہر مرحلہ ایک ذریعۂ آمدن بنا دیا گیا ہے۔ بیرون ممالک جیسے برطانیہ، امریکہ اور کینیڈا میں یہ فیسیں لاکھوں روپے سالانہ تک پہنچ جاتی ہیں۔ محدود آمدنی والے گھرانوں کے لیے یہ بہت بڑی مشکل ہے۔</p>
+               <p>Halal Match.com اس سب کو بدلنے کے لیے بنایا گیا ہے۔ یہ پلیٹ فارم منافع یا کاروبار کے لیے نہیں بلکہ ایک مقصد کے لیے ہے۔ ہمارا مقصد نکاح کو آسان اور سستا بنانا اور سنتِ نبوی ﷺ کو زندہ کرنا ہے۔ ہم چاہتے ہیں کہ خاندان کردار، ایمان اور مطابقت پر توجہ دیں، نہ کہ دولت اور حیثیت پر۔</p>
+               <p>یہ مشن میری ذات سے شروع ہوا۔ میں نہ جاگیردار ہوں اور نہ کوئی بڑا بزنس مین۔ میں ایک عام اور بے روزگار نوجوان ہوں لیکن اللہ نے مجھے یہ کام کرنے کے لیے منتخب کیا۔ میری دعا ہے کہ یہ کوشش میرے والد مرحوم نور محمد مجاہد کے لیے صدقہ جاریہ بنے اور میرے لیے بھی بخشش کا ذریعہ ہو۔</p>
+               <p>میری سب سے گزارش ہے کہ آپ اس مشن کو دعاؤں میں یاد رکھیں، دوسروں تک پہنچائیں اور نکاح کو آسان بنانے کے سفر میں ہمارا ساتھ دیں۔</p>
+               <p>خاکسار،<br>احمد حسن نور<br>پروفیشنل سروس پرووائیڈر — Halal Match.com<br>رحیم یار خان</p>`
+      },
+      roman: {
+        short: `<p>Nikah ko aam karo, gunah ko khatam karo – yehi hamara maqsad hai.</p>
+                <p>Halal Match.com sirf ek website nahi balki ek vision aur mission hai jiska maqsad Ummat-e-Muslima ko qareeb lana, nikah ko aasan banana aur unn ghair zaroori kharchon aur rasmon ko khatam karna hai jinhon ne nikah ko ek karobar bana diya hai.</p>`,
+        full: `<p>Nikah ko aam karo, gunah ko khatam karo – yehi hamara maqsad hai.</p>
+               <p>Halal Match.com sirf ek website nahi balki ek vision aur mission hai jiska maqsad Ummat-e-Muslima ko qareeb lana, nikah ko aasan banana aur unn ghair zaroori kharchon aur rasmon ko khatam karna hai jinhon ne nikah ko ek karobar bana diya hai.</p>
+               <p>Aaj hamare muashray mein sabse badi rukawat ye hai ke rishtay bhaari maali taqazon ke sath jurr gaye hain. Pakistan mein ek rishta tay karne ke liye 20 hazar se 50 hazar tak fees li jati hai. Registration se lekar mangni aur nikah tak har marhala ek zariya-e-aamdani ban gaya hai. Bairuni mumalik jaise UK, USA aur Canada mein ye fees lakhon rupay saalana tak pohanch jati hain. Mehdoood aamdani walay gharanon ke liye ye bohot badi mushkil hai.</p>
+               <p>Halal Match.com is sab ko badalne ke liye banaya gaya hai. Ye platform munafa ya karobar ke liye nahi balki ek maqsad ke liye hai. Hamara maqsad nikah ko aasan aur sasta banana aur Sunnat-e-Nabwi (ﷺ) ko zinda karna hai. Hum chahte hain ke khandan kirdar, imaan aur mutabiqat par tawajju dein, na ke daulat aur haisiyat par.</p>
+               <p>Ye mission meri zaat se shuru hua. Main na jagirdar hoon na koi bara businessman. Main ek aam aur berozgar naujawan hoon lekin Allah ne mujhe ye kaam karne ke liye muntakhib kiya. Meri dua hai ke ye koshish mere walid marhoom Noor Muhammad Mujahid ke liye sadaqa jariya bane aur mere liye bhi bakhshish ka zariya ho.</p>
+               <p>Meri sab se guzarish hai ke aap is mission ko duaon mein yaad rakhein, doosron tak pohnchayen aur nikah ko aasan banane ke safar mein hamara saath dein.</p>
+               <p>Khaksar,<br>Ahmed Hassan Noor<br>Professional Service Provider — Halal Match.com<br>Rahim Yar Khan</p>`
+      }
+    };
+
+    const languageSelect = document.getElementById('language-select');
+    const missionContent = document.getElementById('mission-content');
+    const shortContent = document.getElementById('short-content');
+    const fullContent = document.getElementById('full-content');
+    const seeMoreBtn = document.getElementById('see-more-btn');
+
+    let currentLanguage = 'english';
+    let isExpanded = false;
+
+    function updateContent() {
+      const data = missionData[currentLanguage];
+      shortContent.innerHTML = data.short;
+      fullContent.innerHTML = data.full;
+      if (isExpanded) {
+        shortContent.style.display = 'none';
+        fullContent.style.display = 'block';
+        seeMoreBtn.textContent = 'See Less';
+      } else {
+        shortContent.style.display = 'block';
+        fullContent.style.display = 'none';
+        seeMoreBtn.textContent = 'See More';
+      }
+    }
+
+    languageSelect.addEventListener('change', (e) => {
+      currentLanguage = e.target.value;
+      updateContent();
+    });
+
+    seeMoreBtn.addEventListener('click', () => {
+      isExpanded = !isExpanded;
+      updateContent();
+    });
+
+    // Initialize
+    updateContent();
+    
+    // About section toggle
+    const aboutShortContent = document.getElementById('about-short-content');
+    const aboutFullContent = document.getElementById('about-full-content');
+    const aboutSeeMoreBtn = document.getElementById('about-see-more-btn');
+
+    let aboutIsExpanded = false;
+
+    aboutSeeMoreBtn.addEventListener('click', () => {
+      aboutIsExpanded = !aboutIsExpanded;
+      if (aboutIsExpanded) {
+        aboutShortContent.style.display = 'none';
+        aboutFullContent.style.display = 'block';
+        aboutSeeMoreBtn.textContent = 'See Less';
+      } else {
+        aboutShortContent.style.display = 'block';
+        aboutFullContent.style.display = 'none';
+        aboutSeeMoreBtn.textContent = 'See More';
+      }
+    });
+
+    // Success Stories toggle
+    let storiesExpanded = false;
+
+    function toggleStories() {
+      const moreStories = document.getElementById('more-stories');
+      const seeMoreStoriesBtn = document.getElementById('see-more-stories-btn');
+      if (moreStories) {
+        storiesExpanded = !storiesExpanded;
+        if (storiesExpanded) {
+          moreStories.style.display = 'block';
+          seeMoreStoriesBtn.textContent = 'See Less';
+          seeMoreStoriesBtn.classList.remove('bg-gradient-to-r', 'from-yellow-500', 'to-yellow-600', 'text-black');
+          seeMoreStoriesBtn.classList.add('bg-gradient-to-r', 'from-red-500', 'to-red-600', 'text-white');
+        } else {
+          moreStories.style.display = 'none';
+          seeMoreStoriesBtn.textContent = 'See More';
+          seeMoreStoriesBtn.classList.remove('bg-gradient-to-r', 'from-red-500', 'to-red-600', 'text-white');
+          seeMoreStoriesBtn.classList.add('bg-gradient-to-r', 'from-yellow-500', 'to-yellow-600', 'text-black');
+        }
+      }
+    }
+
+    document.getElementById('see-more-stories-btn').addEventListener('click', toggleStories);
+
+    // Load stories from localStorage
+    function loadStories() {
+      const stories = JSON.parse(localStorage.getItem('successStories')) || [
+        { content: "Karachi ki Ahmed family ne HalalMatch ke zariye apni beti ka rishta tay kiya. Yeh match imaan aur khushi ka naseeb tha. Allah ka shukar hai ke yeh platform mila.", date: "January 2025" },
+        { content: "Multan ki Khan family ne apni beti ke liye perfect rishta mila. HalalMatch ne unki dua kabul ki. Ab woh ek barkat wali zindagi jee rahi hain.", date: "February 2025" },
+        { content: "Bahawalpur ki Ali family ne apne bete ke liye ideal life partner mila. Yeh rishta imaan aur mohabbat ka naseeb tha. HalalMatch ne dilo ko jod diya.", date: "March 2025" },
+        { content: "Rahim Yar Khan ki Hussain family HalalMatch ko shukriya ada karti hai. Yeh match trust aur khushi ka zariya bana. Allah ka fazal hai.", date: "April 2025" },
+        { content: "Sukkur ki Malik family ne HalalMatch ke through union banaya. Unki shadi barkaton se bharpoor thi. Yeh platform ne aman diya.", date: "May 2025" },
+        { content: "Hyderabad ki Rizvi family apni success share karti hai. HalalMatch ne unhe imaan mein jod diya. Ab woh ek khushhaal ghar basa rahi hain.", date: "June 2025" },
+        { content: "Kashmore ki Shah family ne aman paya. HalalMatch ne yeh mumkin bana diya. Yeh rishta Allah ki taraf se inam tha.", date: "July 2025" },
+        { content: "Kandhkot ki Qureshi family celebrate karti hai. Yeh match jannat se mila tha HalalMatch ke zariye. Khushi ka noor sa chaaya hai.", date: "August 2025" },
+        { content: "Sialkot ki Butt family khushi share karti hai. HalalMatch ne dilo ko Islamic values ke sath joda. Yeh platform ne barkat layi.", date: "September 2025" },
+        { content: "Lahore ki Siddiqui family ne apna match mila. Yeh kahani imaan aur family approval ki hai. HalalMatch ne dua kabul ki.", date: "October 2025" },
+        { content: "Islamabad ki Farooq family ne union banaya. HalalMatch ki dedication ne chamak di. Ab woh ek saathi pa kar khush hain.", date: "November 2025" },
+        { content: "Rawalpindi ki Khan family platform ko shukriya karti hai. Yeh rishta barkat wala tha. Allah ka fazal hai ke yeh mila.", date: "December 2025" },
+        { content: "Faisalabad ki Ahmed family celebrate karti hai. HalalMatch ne unhe jod diya. Yeh match imaan aur mohabbat ka naseeb tha.", date: "January 2025" },
+        { content: "Jhang ki Malik family apni kahani share karti hai. Imaan aur compatibility ne khushi layi. HalalMatch ne dilo ko mila diya.", date: "February 2025" },
+        { content: "Kasur ki Ali family ne apna partner mila. HalalMatch ne aasan aur barkat wala bana diya. Ab woh ek khushhaal zindagi jee rahi hain.", date: "March 2025" },
+        { content: "Peshawar ki Khan family ne HalalMatch ke zariye khushi payi. Yeh rishta Allah ka inam tha. Shukar hai ke yeh platform mila.", date: "April 2025" },
+        { content: "Quetta ki Ahmed family ne apni beti ke liye match mila. HalalMatch ne dua kabul ki. Yeh rishta barkaton se bharpoor hai.", date: "May 2025" },
+        { content: "Gujranwala ki Rizvi family celebrate karti hai. HalalMatch ne unhe imaan mein jod diya. Khushi ka noor sa chaaya hai.", date: "June 2025" },
+        { content: "Faisalabad ki Butt family khushi share karti hai. Yeh match Islamic values ka naseeb tha. HalalMatch ne aman diya.", date: "July 2025" },
+        { content: "Multan ki Siddiqui family ne union banaya. HalalMatch ki madad ne barkat layi. Ab woh ek saathi pa kar khush hain.", date: "August 2025" }
+      ];
+
+      const container = document.getElementById('success-stories-container');
+      container.innerHTML = '';
+
+      // Show first 2 stories
+      const visibleStories = stories.slice(0, 2);
+      visibleStories.forEach(story => {
+        const storyDiv = document.createElement('div');
+        storyDiv.className = 'story mb-4 p-4 bg-gray-50 rounded-lg';
+        storyDiv.innerHTML = `
+          <p class="text-black" style="color: #000000; text-shadow: 1px 1px 3px #ffffff;">${story.content}</p>
+          <p class="text-sm text-gray-600">${story.date}</p>
+        `;
+        container.appendChild(storyDiv);
+      });
+
+      // Add more stories div
+      const moreStoriesDiv = document.createElement('div');
+      moreStoriesDiv.id = 'more-stories';
+      moreStoriesDiv.style.display = 'none';
+      stories.slice(2).forEach(story => {
+        const storyDiv = document.createElement('div');
+        storyDiv.className = 'story mb-4 p-4 bg-gray-50 rounded-lg';
+        storyDiv.innerHTML = `
+          <p class="text-black" style="color: #000000; text-shadow: 1px 1px 3px #ffffff;">${story.content}</p>
+          <p class="text-sm text-gray-600">${story.date}</p>
+        `;
+        moreStoriesDiv.appendChild(storyDiv);
+      });
+      container.appendChild(moreStoriesDiv);
+    }
+
+    // Story form submission
+    const storyForm = document.getElementById('story-form');
+    const storyText = document.getElementById('story-text');
+
+    storyForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const story = storyText.value.trim();
+      if (story) {
+        // Save to localStorage as pending
+        const pendingStories = JSON.parse(localStorage.getItem('pendingStories')) || [];
+        pendingStories.push({ content: story, date: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) });
+        localStorage.setItem('pendingStories', JSON.stringify(pendingStories));
+        alert('Thank you for sharing your story! It will be reviewed and added soon.');
+        storyText.value = '';
+      }
+    });
+
+    // Initialize stories
+    loadStories();
+  </script>
+</body>
+</html>
+
+
